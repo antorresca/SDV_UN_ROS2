@@ -1,0 +1,25 @@
+[0.046s] Invoking command in '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial -- -j12 -l12
+[0.297s] [ 50%] [32mBuilding CXX object CMakeFiles/sdv_serial_node.dir/src/sdv_serial_node.cpp.o[0m
+[6.778s] [100%] [32m[1mLinking CXX executable sdv_serial_node[0m
+[7.040s] [100%] Built target sdv_serial_node
+[7.064s] Invoked command in '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial -- -j12 -l12
+[7.065s] Invoking command in '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial
+[7.081s] -- Install configuration: ""
+[7.082s] -- Execute custom install script
+[7.082s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/lib/sdv_serial/sdv_serial_node
+[7.083s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/ament_index/resource_index/package_run_dependencies/sdv_serial
+[7.083s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/ament_index/resource_index/parent_prefix_path/sdv_serial
+[7.083s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/environment/ament_prefix_path.sh
+[7.083s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/environment/ament_prefix_path.dsv
+[7.084s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/environment/path.sh
+[7.084s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/environment/path.dsv
+[7.084s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/local_setup.bash
+[7.085s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/local_setup.sh
+[7.085s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/local_setup.zsh
+[7.085s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/local_setup.dsv
+[7.085s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/package.dsv
+[7.105s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/ament_index/resource_index/packages/sdv_serial
+[7.105s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/cmake/sdv_serialConfig.cmake
+[7.105s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/cmake/sdv_serialConfig-version.cmake
+[7.106s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/package.xml
+[7.111s] Invoked command in '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial

@@ -1,0 +1,145 @@
+[0.000000] (-) TimerEvent: {}
+[0.001109] (-) JobUnselected: {'identifier': 'sdv_msgs'}
+[0.001330] (sdv_serial) JobQueued: {'identifier': 'sdv_serial', 'dependencies': OrderedDict()}
+[0.001405] (sdv_serial) JobStarted: {'identifier': 'sdv_serial'}
+[0.016824] (sdv_serial) JobProgress: {'identifier': 'sdv_serial', 'progress': 'cmake'}
+[0.018670] (sdv_serial) JobProgress: {'identifier': 'sdv_serial', 'progress': 'build'}
+[0.019677] (sdv_serial) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial', '--', '-j12', '-l12'], 'cwd': '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial', 'env': OrderedDict({'USER': 'antorresca', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'x11', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/antorresca', 'OLDPWD': '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2960', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'GNOME_KEYRING_CONTROL': '/run/user/1000/keyring', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'COLCON_PREFIX_PATH': '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'antorresca', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.SettingsDaemon.MediaKeys.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'antorresca', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'WINDOWPATH': '2', 'PATH': '/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/antorresca-ubuntu:@/tmp/.ICE-unix/2732,unix/antorresca-ubuntu:/tmp/.ICE-unix/2732', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/cacd3f1d_debf_4f71_a8fd_41614e7a0dbd', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':1', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/gdm/Xauthority', 'GNOME_TERMINAL_SERVICE': ':1.108', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial:/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'GPG_AGENT_INFO': '/run/user/1000/gnupg/S.gpg-agent:0:1', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial:/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[0.099662] (-) TimerEvent: {}
+[0.159048] (sdv_serial) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding CXX object CMakeFiles/sdv_serial_node.dir/src/sdv_serial_node.cpp.o\x1b[0m\n'}
+[0.199825] (-) TimerEvent: {}
+[0.300273] (-) TimerEvent: {}
+[0.400681] (-) TimerEvent: {}
+[0.501150] (-) TimerEvent: {}
+[0.601582] (-) TimerEvent: {}
+[0.702029] (-) TimerEvent: {}
+[0.802485] (-) TimerEvent: {}
+[0.902905] (-) TimerEvent: {}
+[1.003311] (-) TimerEvent: {}
+[1.103670] (-) TimerEvent: {}
+[1.204127] (-) TimerEvent: {}
+[1.304582] (-) TimerEvent: {}
+[1.404973] (-) TimerEvent: {}
+[1.505417] (-) TimerEvent: {}
+[1.605821] (-) TimerEvent: {}
+[1.706230] (-) TimerEvent: {}
+[1.806642] (-) TimerEvent: {}
+[1.907024] (-) TimerEvent: {}
+[2.007406] (-) TimerEvent: {}
+[2.107856] (-) TimerEvent: {}
+[2.208314] (-) TimerEvent: {}
+[2.308702] (-) TimerEvent: {}
+[2.409011] (-) TimerEvent: {}
+[2.509436] (-) TimerEvent: {}
+[2.609839] (-) TimerEvent: {}
+[2.710280] (-) TimerEvent: {}
+[2.810739] (-) TimerEvent: {}
+[2.911181] (-) TimerEvent: {}
+[3.011661] (-) TimerEvent: {}
+[3.112102] (-) TimerEvent: {}
+[3.212554] (-) TimerEvent: {}
+[3.312989] (-) TimerEvent: {}
+[3.413483] (-) TimerEvent: {}
+[3.513915] (-) TimerEvent: {}
+[3.614328] (-) TimerEvent: {}
+[3.714743] (-) TimerEvent: {}
+[3.815171] (-) TimerEvent: {}
+[3.915534] (-) TimerEvent: {}
+[4.015913] (-) TimerEvent: {}
+[4.116398] (-) TimerEvent: {}
+[4.216797] (-) TimerEvent: {}
+[4.317258] (-) TimerEvent: {}
+[4.417645] (-) TimerEvent: {}
+[4.518088] (-) TimerEvent: {}
+[4.618477] (-) TimerEvent: {}
+[4.718874] (-) TimerEvent: {}
+[4.819296] (-) TimerEvent: {}
+[4.919685] (-) TimerEvent: {}
+[5.020101] (-) TimerEvent: {}
+[5.120513] (-) TimerEvent: {}
+[5.220949] (-) TimerEvent: {}
+[5.321417] (-) TimerEvent: {}
+[5.421810] (-) TimerEvent: {}
+[5.522199] (-) TimerEvent: {}
+[5.622617] (-) TimerEvent: {}
+[5.723015] (-) TimerEvent: {}
+[5.823447] (-) TimerEvent: {}
+[5.923787] (-) TimerEvent: {}
+[6.024209] (-) TimerEvent: {}
+[6.124597] (-) TimerEvent: {}
+[6.225004] (-) TimerEvent: {}
+[6.325431] (-) TimerEvent: {}
+[6.425829] (-) TimerEvent: {}
+[6.526261] (-) TimerEvent: {}
+[6.626665] (-) TimerEvent: {}
+[6.727078] (-) TimerEvent: {}
+[6.827421] (-) TimerEvent: {}
+[6.927869] (-) TimerEvent: {}
+[7.028332] (-) TimerEvent: {}
+[7.128749] (-) TimerEvent: {}
+[7.229170] (-) TimerEvent: {}
+[7.329613] (-) TimerEvent: {}
+[7.429916] (-) TimerEvent: {}
+[7.530277] (-) TimerEvent: {}
+[7.630576] (-) TimerEvent: {}
+[7.730981] (-) TimerEvent: {}
+[7.831365] (-) TimerEvent: {}
+[7.931678] (-) TimerEvent: {}
+[8.031969] (-) TimerEvent: {}
+[8.132247] (-) TimerEvent: {}
+[8.232640] (-) TimerEvent: {}
+[8.332997] (-) TimerEvent: {}
+[8.433419] (-) TimerEvent: {}
+[8.533791] (-) TimerEvent: {}
+[8.634159] (-) TimerEvent: {}
+[8.734465] (-) TimerEvent: {}
+[8.834835] (-) TimerEvent: {}
+[8.935167] (-) TimerEvent: {}
+[9.035441] (-) TimerEvent: {}
+[9.135847] (-) TimerEvent: {}
+[9.236294] (-) TimerEvent: {}
+[9.336679] (-) TimerEvent: {}
+[9.436976] (-) TimerEvent: {}
+[9.537363] (-) TimerEvent: {}
+[9.637635] (-) TimerEvent: {}
+[9.737915] (-) TimerEvent: {}
+[9.838298] (-) TimerEvent: {}
+[9.938646] (-) TimerEvent: {}
+[10.039046] (-) TimerEvent: {}
+[10.139422] (-) TimerEvent: {}
+[10.239844] (-) TimerEvent: {}
+[10.340143] (-) TimerEvent: {}
+[10.440487] (-) TimerEvent: {}
+[10.540851] (-) TimerEvent: {}
+[10.641272] (-) TimerEvent: {}
+[10.711792] (sdv_serial) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking CXX executable sdv_serial_node\x1b[0m\n'}
+[10.741364] (-) TimerEvent: {}
+[10.841685] (-) TimerEvent: {}
+[10.942167] (-) TimerEvent: {}
+[11.042566] (-) TimerEvent: {}
+[11.142954] (-) TimerEvent: {}
+[11.157346] (sdv_serial) StdoutLine: {'line': b'[100%] Built target sdv_serial_node\n'}
+[11.172992] (sdv_serial) CommandEnded: {'returncode': 0}
+[11.174133] (sdv_serial) JobProgress: {'identifier': 'sdv_serial', 'progress': 'install'}
+[11.186219] (sdv_serial) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial'], 'cwd': '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial', 'env': OrderedDict({'USER': 'antorresca', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'x11', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/antorresca', 'OLDPWD': '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2960', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'GNOME_KEYRING_CONTROL': '/run/user/1000/keyring', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'COLCON_PREFIX_PATH': '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'antorresca', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.SettingsDaemon.MediaKeys.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'antorresca', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'WINDOWPATH': '2', 'PATH': '/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/antorresca-ubuntu:@/tmp/.ICE-unix/2732,unix/antorresca-ubuntu:/tmp/.ICE-unix/2732', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/cacd3f1d_debf_4f71_a8fd_41614e7a0dbd', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':1', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/gdm/Xauthority', 'GNOME_TERMINAL_SERVICE': ':1.108', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial:/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'GPG_AGENT_INFO': '/run/user/1000/gnupg/S.gpg-agent:0:1', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial:/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[11.196496] (sdv_serial) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[11.196952] (sdv_serial) StdoutLine: {'line': b'-- Execute custom install script\n'}
+[11.197274] (sdv_serial) StdoutLine: {'line': b'-- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/lib/sdv_serial/sdv_serial_node\n'}
+[11.209680] (sdv_serial) StdoutLine: {'line': b'-- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/ament_index/resource_index/package_run_dependencies/sdv_serial\n'}
+[11.209967] (sdv_serial) StdoutLine: {'line': b'-- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/ament_index/resource_index/parent_prefix_path/sdv_serial\n'}
+[11.210460] (sdv_serial) StdoutLine: {'line': b'-- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/environment/ament_prefix_path.sh\n'}
+[11.210806] (sdv_serial) StdoutLine: {'line': b'-- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/environment/ament_prefix_path.dsv\n'}
+[11.211097] (sdv_serial) StdoutLine: {'line': b'-- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/environment/path.sh\n'}
+[11.211256] (sdv_serial) StdoutLine: {'line': b'-- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/environment/path.dsv\n'}
+[11.211412] (sdv_serial) StdoutLine: {'line': b'-- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/local_setup.bash\n'}
+[11.211568] (sdv_serial) StdoutLine: {'line': b'-- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/local_setup.sh\n'}
+[11.211714] (sdv_serial) StdoutLine: {'line': b'-- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/local_setup.zsh\n'}
+[11.211877] (sdv_serial) StdoutLine: {'line': b'-- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/local_setup.dsv\n'}
+[11.211978] (sdv_serial) StdoutLine: {'line': b'-- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/package.dsv\n'}
+[11.224160] (sdv_serial) StdoutLine: {'line': b'-- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/ament_index/resource_index/packages/sdv_serial\n'}
+[11.224530] (sdv_serial) StdoutLine: {'line': b'-- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/cmake/sdv_serialConfig.cmake\n'}
+[11.224867] (sdv_serial) StdoutLine: {'line': b'-- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/cmake/sdv_serialConfig-version.cmake\n'}
+[11.225131] (sdv_serial) StdoutLine: {'line': b'-- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/package.xml\n'}
+[11.227523] (sdv_serial) CommandEnded: {'returncode': 0}
+[11.240294] (sdv_serial) JobEnded: {'identifier': 'sdv_serial', 'rc': 0}
+[11.241182] (-) EventReactorShutdown: {}

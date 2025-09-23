@@ -1,0 +1,1 @@
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs/ament_cmake_core/sdv_msgsConfig-version.cmake

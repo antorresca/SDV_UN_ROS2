@@ -1,0 +1,21 @@
+[0.036s] Invoking command in '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs -- -j12 -l12
+[0.159s] Invoked command in '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs -- -j12 -l12
+[0.191s] Invoking command in '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs
+[0.218s] -- Install configuration: ""
+[0.219s] -- Execute custom install script
+[0.220s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/ament_index/resource_index/package_run_dependencies/sdv_msgs
+[0.221s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/ament_index/resource_index/parent_prefix_path/sdv_msgs
+[0.222s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/environment/ament_prefix_path.sh
+[0.223s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/environment/ament_prefix_path.dsv
+[0.224s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/environment/path.sh
+[0.224s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/environment/path.dsv
+[0.225s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/local_setup.bash
+[0.226s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/local_setup.sh
+[0.227s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/local_setup.zsh
+[0.227s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/local_setup.dsv
+[0.228s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/package.dsv
+[0.257s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/ament_index/resource_index/packages/sdv_msgs
+[0.258s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/cmake/sdv_msgsConfig.cmake
+[0.258s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/cmake/sdv_msgsConfig-version.cmake
+[0.259s] -- Up-to-date symlink: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/package.xml
+[0.267s] Invoked command in '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs

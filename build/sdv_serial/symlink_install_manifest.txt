@@ -1,0 +1,16 @@
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/lib/sdv_serial/sdv_serial_node
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/ament_index/resource_index/package_run_dependencies/sdv_serial
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/ament_index/resource_index/parent_prefix_path/sdv_serial
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/environment/ament_prefix_path.sh
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/environment/ament_prefix_path.dsv
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/environment/path.sh
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/environment/path.dsv
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/local_setup.bash
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/local_setup.sh
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/local_setup.zsh
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/local_setup.dsv
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/package.dsv
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/ament_index/resource_index/packages/sdv_serial
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/cmake/sdv_serialConfig.cmake
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/cmake/sdv_serialConfig-version.cmake
+/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_serial/share/sdv_serial/package.xml

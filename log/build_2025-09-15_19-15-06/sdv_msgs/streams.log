@@ -1,0 +1,49 @@
+[0.022s] Invoking command in '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/src/sdv_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs
+[0.136s] -- The C compiler identification is GNU 13.3.0
+[0.250s] -- The CXX compiler identification is GNU 13.3.0
+[0.287s] -- Detecting C compiler ABI info
+[0.476s] -- Detecting C compiler ABI info - done
+[0.494s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.494s] -- Detecting C compile features
+[0.495s] -- Detecting C compile features - done
+[0.514s] -- Detecting CXX compiler ABI info
+[0.726s] -- Detecting CXX compiler ABI info - done
+[0.744s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.745s] -- Detecting CXX compile features
+[0.746s] -- Detecting CXX compile features - done
+[0.755s] -- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[1.047s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[1.193s] -- Override CMake install command with custom implementation using symlinks instead of copying resources
+[1.321s] -- Found std_msgs: 5.3.6 (/opt/ros/jazzy/share/std_msgs/cmake)
+[1.438s] -- Found rosidl_generator_c: 4.6.6 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[1.477s] -- Found rosidl_generator_cpp: 4.6.6 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[1.521s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.571s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.653s] -- Found ament_lint_auto: 0.17.3 (/opt/ros/jazzy/share/ament_lint_auto/cmake)
+[1.900s] -- Added test 'lint_cmake' to check CMake code style
+[1.903s] -- Added test 'xmllint' to check XML markup files
+[1.909s] -- Configuring done (1.9s)
+[1.917s] -- Generating done (0.0s)
+[1.921s] -- Build files have been written to: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs
+[1.935s] Invoked command in '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/src/sdv_msgs -DAMENT_CMAKE_SYMLINK_INSTALL=1 -DCMAKE_INSTALL_PREFIX=/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs
+[1.937s] Invoking command in '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs -- -j12 -l12
+[2.028s] Invoked command in '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --build /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs -- -j12 -l12
+[2.053s] Invoking command in '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs
+[2.070s] -- Install configuration: ""
+[2.071s] -- Execute custom install script
+[2.072s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/ament_index/resource_index/package_run_dependencies/sdv_msgs
+[2.093s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/ament_index/resource_index/parent_prefix_path/sdv_msgs
+[2.113s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/environment/ament_prefix_path.sh
+[2.134s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/environment/ament_prefix_path.dsv
+[2.155s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/environment/path.sh
+[2.175s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/environment/path.dsv
+[2.195s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/local_setup.bash
+[2.215s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/local_setup.sh
+[2.235s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/local_setup.zsh
+[2.259s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/local_setup.dsv
+[2.279s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/package.dsv
+[2.300s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/ament_index/resource_index/packages/sdv_msgs
+[2.321s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/cmake/sdv_msgsConfig.cmake
+[2.342s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/cmake/sdv_msgsConfig-version.cmake
+[2.363s] -- Symlinking: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/install/sdv_msgs/share/sdv_msgs/package.xml
+[2.387s] Invoked command in '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com /usr/bin/cmake --install /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_msgs

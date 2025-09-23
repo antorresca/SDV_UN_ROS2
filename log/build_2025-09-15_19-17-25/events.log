@@ -1,0 +1,102 @@
+[0.000000] (-) TimerEvent: {}
+[0.000886] (-) JobUnselected: {'identifier': 'sdv_msgs'}
+[0.000974] (sdv_serial) JobQueued: {'identifier': 'sdv_serial', 'dependencies': OrderedDict()}
+[0.001008] (sdv_serial) JobStarted: {'identifier': 'sdv_serial'}
+[0.009936] (sdv_serial) JobProgress: {'identifier': 'sdv_serial', 'progress': 'cmake'}
+[0.010643] (sdv_serial) JobProgress: {'identifier': 'sdv_serial', 'progress': 'build'}
+[0.011144] (sdv_serial) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial', '--', '-j12', '-l12'], 'cwd': '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial', 'env': OrderedDict({'USER': 'antorresca', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'x11', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/antorresca', 'OLDPWD': '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2960', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'GNOME_KEYRING_CONTROL': '/run/user/1000/keyring', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'antorresca', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.SettingsDaemon.MediaKeys.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'antorresca', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'WINDOWPATH': '2', 'PATH': '/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/antorresca-ubuntu:@/tmp/.ICE-unix/2732,unix/antorresca-ubuntu:/tmp/.ICE-unix/2732', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/cacd3f1d_debf_4f71_a8fd_41614e7a0dbd', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':1', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/gdm/Xauthority', 'GNOME_TERMINAL_SERVICE': ':1.108', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'GPG_AGENT_INFO': '/run/user/1000/gnupg/S.gpg-agent:0:1', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[0.046231] (sdv_serial) StdoutLine: {'line': b'-- Found ament_cmake: 2.5.4 (/opt/ros/jazzy/share/ament_cmake/cmake)\n'}
+[0.099244] (-) TimerEvent: {}
+[0.199577] (-) TimerEvent: {}
+[0.280965] (sdv_serial) StdoutLine: {'line': b'-- Override CMake install command with custom implementation using symlinks instead of copying resources\n'}
+[0.288344] (sdv_serial) StdoutLine: {'line': b'-- Found rclcpp: 28.1.11 (/opt/ros/jazzy/share/rclcpp/cmake)\n'}
+[0.299682] (-) TimerEvent: {}
+[0.318399] (sdv_serial) StdoutLine: {'line': b'-- Found rosidl_generator_c: 4.6.6 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)\n'}
+[0.328765] (sdv_serial) StdoutLine: {'line': b'-- Found rosidl_generator_cpp: 4.6.6 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)\n'}
+[0.341380] (sdv_serial) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[0.356201] (sdv_serial) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[0.399813] (-) TimerEvent: {}
+[0.421576] (sdv_serial) StdoutLine: {'line': b'-- Found rmw_implementation_cmake: 7.3.2 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)\n'}
+[0.422850] (sdv_serial) StdoutLine: {'line': b'-- Found rmw_fastrtps_cpp: 8.4.3 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)\n'}
+[0.497812] (sdv_serial) StdoutLine: {'line': b"-- Using RMW implementation 'rmw_fastrtps_cpp' as default\n"}
+[0.499893] (-) TimerEvent: {}
+[0.568097] (sdv_serial) StdoutLine: {'line': b'-- Found std_msgs: 5.3.6 (/opt/ros/jazzy/share/std_msgs/cmake)\n'}
+[0.583245] (sdv_serial) StdoutLine: {'line': b'-- Found sensor_msgs: 5.3.6 (/opt/ros/jazzy/share/sensor_msgs/cmake)\n'}
+[0.600020] (-) TimerEvent: {}
+[0.627845] (sdv_serial) StdoutLine: {'line': b'-- Found PkgConfig: /usr/bin/pkg-config (found version "1.8.1") \n'}
+[0.628730] (sdv_serial) StdoutLine: {'line': b"-- Checking for module 'libserial'\n"}
+[0.651625] (sdv_serial) StdoutLine: {'line': b'--   Found libserial, version 1.0.0\n'}
+[0.700127] (-) TimerEvent: {}
+[0.800445] (-) TimerEvent: {}
+[0.820189] (sdv_serial) StdoutLine: {'line': b'-- Configuring done (0.8s)\n'}
+[0.834995] (sdv_serial) StdoutLine: {'line': b'-- Generating done (0.0s)\n'}
+[0.839131] (sdv_serial) StdoutLine: {'line': b'-- Build files have been written to: /home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial\n'}
+[0.887967] (sdv_serial) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding CXX object CMakeFiles/sdv_serial_node.dir/src/sdv_serial_node.cpp.o\x1b[0m\n'}
+[0.900587] (-) TimerEvent: {}
+[1.000986] (-) TimerEvent: {}
+[1.101267] (-) TimerEvent: {}
+[1.201571] (-) TimerEvent: {}
+[1.301940] (-) TimerEvent: {}
+[1.402241] (-) TimerEvent: {}
+[1.502670] (-) TimerEvent: {}
+[1.603000] (-) TimerEvent: {}
+[1.703357] (-) TimerEvent: {}
+[1.803773] (-) TimerEvent: {}
+[1.904130] (-) TimerEvent: {}
+[2.004466] (-) TimerEvent: {}
+[2.104753] (-) TimerEvent: {}
+[2.205173] (-) TimerEvent: {}
+[2.305513] (-) TimerEvent: {}
+[2.405856] (-) TimerEvent: {}
+[2.506140] (-) TimerEvent: {}
+[2.606560] (-) TimerEvent: {}
+[2.706973] (-) TimerEvent: {}
+[2.807405] (-) TimerEvent: {}
+[2.907715] (-) TimerEvent: {}
+[3.008117] (-) TimerEvent: {}
+[3.108485] (-) TimerEvent: {}
+[3.208834] (-) TimerEvent: {}
+[3.242668] (sdv_serial) StderrLine: {'line': b'\x1b[01m\x1b[K/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/src/sdv_serial/src/sdv_serial_node.cpp:\x1b[m\x1b[K In constructor \xe2\x80\x98\x1b[01m\x1b[KSdvSerialNode::\x1b[01;32m\x1b[KSdvSerialNode\x1b[m\x1b[K()\x1b[m\x1b[K\xe2\x80\x99:\n'}
+[3.243118] (sdv_serial) StderrLine: {'line': b'\x1b[01m\x1b[K/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/src/sdv_serial/src/sdv_serial_node.cpp:51:20:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[Kclass LibSerial::SerialPort\x1b[m\x1b[K\xe2\x80\x99 has no member named \xe2\x80\x98\x1b[01m\x1b[KSetCharSize\x1b[m\x1b[K\xe2\x80\x99; did you mean \xe2\x80\x98\x1b[01m\x1b[KSetCharacterSize\x1b[m\x1b[K\xe2\x80\x99?\n'}
+[3.243360] (sdv_serial) StderrLine: {'line': b'   51 |       serial_port_.\x1b[01;31m\x1b[KSetCharSize\x1b[m\x1b[K(CharacterSize::CHAR_SIZE_8);\n'}
+[3.243574] (sdv_serial) StderrLine: {'line': b'      |                    \x1b[01;31m\x1b[K^~~~~~~~~~~\x1b[m\x1b[K\n'}
+[3.243782] (sdv_serial) StderrLine: {'line': b'      |                    \x1b[32m\x1b[KSetCharacterSize\x1b[m\x1b[K\n'}
+[3.261164] (sdv_serial) StderrLine: {'line': b'\x1b[01m\x1b[K/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/src/sdv_serial/src/sdv_serial_node.cpp:\x1b[m\x1b[K In member function \xe2\x80\x98\x1b[01m\x1b[Kvoid SdvSerialNode::\x1b[01;32m\x1b[KreadSerialTimer\x1b[m\x1b[K()\x1b[m\x1b[K\xe2\x80\x99:\n'}
+[3.261688] (sdv_serial) StderrLine: {'line': b'\x1b[01m\x1b[K/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/src/sdv_serial/src/sdv_serial_node.cpp:105:48:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[Kcannot convert \xe2\x80\x98\x1b[01m\x1b[Kint\x1b[m\x1b[K\xe2\x80\x99 to \xe2\x80\x98\x1b[01m\x1b[Kstd::string&\x1b[m\x1b[K\xe2\x80\x99 {aka \xe2\x80\x98\x1b[01m\x1b[Kstd::__cxx11::basic_string<char>&\x1b[m\x1b[K\xe2\x80\x99}\n'}
+[3.261913] (sdv_serial) StderrLine: {'line': b"  105 |       std::string line = serial_port_.ReadLine(\x1b[01;31m\x1b[K1\x1b[m\x1b[K, '\\n'); // timeout 1ms; ajusta\n"}
+[3.262088] (sdv_serial) StderrLine: {'line': b'      |                                                \x1b[01;31m\x1b[K^\x1b[m\x1b[K\n'}
+[3.262229] (sdv_serial) StderrLine: {'line': b'      |                                                \x1b[01;31m\x1b[K|\x1b[m\x1b[K\n'}
+[3.262300] (sdv_serial) StderrLine: {'line': b'      |                                                \x1b[01;31m\x1b[Kint\x1b[m\x1b[K\n'}
+[3.262372] (sdv_serial) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/src/sdv_serial/src/sdv_serial_node.cpp:12\x1b[m\x1b[K:\n'}
+[3.262445] (sdv_serial) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/libserial/SerialPort.h:382:36:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  initializing argument 1 of \xe2\x80\x98\x1b[01m\x1b[Kvoid LibSerial::SerialPort::\x1b[01;32m\x1b[KReadLine\x1b[m\x1b[K(std::string&, char, size_t)\x1b[m\x1b[K\xe2\x80\x99\n'}
+[3.262517] (sdv_serial) StderrLine: {'line': b'  382 |         void ReadLine(\x1b[01;36m\x1b[Kstd::string& dataString\x1b[m\x1b[K,\n'}
+[3.262589] (sdv_serial) StderrLine: {'line': b'      |                       \x1b[01;36m\x1b[K~~~~~~~~~~~~~^~~~~~~~~~\x1b[m\x1b[K\n'}
+[3.308876] (-) TimerEvent: {}
+[3.409151] (-) TimerEvent: {}
+[3.509505] (-) TimerEvent: {}
+[3.609835] (-) TimerEvent: {}
+[3.710221] (-) TimerEvent: {}
+[3.810566] (-) TimerEvent: {}
+[3.910900] (-) TimerEvent: {}
+[4.011293] (-) TimerEvent: {}
+[4.111935] (-) TimerEvent: {}
+[4.212211] (-) TimerEvent: {}
+[4.312535] (-) TimerEvent: {}
+[4.412818] (-) TimerEvent: {}
+[4.513128] (-) TimerEvent: {}
+[4.613437] (-) TimerEvent: {}
+[4.713759] (-) TimerEvent: {}
+[4.814167] (-) TimerEvent: {}
+[4.914471] (-) TimerEvent: {}
+[5.014861] (-) TimerEvent: {}
+[5.115219] (-) TimerEvent: {}
+[5.215517] (-) TimerEvent: {}
+[5.315863] (-) TimerEvent: {}
+[5.416115] (-) TimerEvent: {}
+[5.504543] (sdv_serial) StderrLine: {'line': b'gmake[2]: *** [CMakeFiles/sdv_serial_node.dir/build.make:76: CMakeFiles/sdv_serial_node.dir/src/sdv_serial_node.cpp.o] Error 1\n'}
+[5.504924] (sdv_serial) StderrLine: {'line': b'gmake[1]: *** [CMakeFiles/Makefile2:137: CMakeFiles/sdv_serial_node.dir/all] Error 2\n'}
+[5.505294] (sdv_serial) StderrLine: {'line': b'gmake: *** [Makefile:146: all] Error 2\n'}
+[5.509464] (sdv_serial) CommandEnded: {'returncode': 2}
+[5.516255] (-) TimerEvent: {}
+[5.518302] (sdv_serial) JobEnded: {'identifier': 'sdv_serial', 'rc': 2}
+[5.528717] (-) EventReactorShutdown: {}

@@ -1,0 +1,8 @@
+In file included from [01m[K/opt/ros/jazzy/include/rclcpp/rclcpp/logging.hpp:24[m[K,
+                 from [01m[K/opt/ros/jazzy/include/rclcpp/rclcpp/copy_all_parameter_values.hpp:27[m[K,
+                 from [01m[K/opt/ros/jazzy/include/rclcpp/rclcpp/rclcpp.hpp:171[m[K,
+                 from [01m[K/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/src/sdv_serial/src/sdv_serial_node.cpp:6[m[K:
+[01m[K/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/src/sdv_serial/src/sdv_serial_node.cpp:[m[K In constructor ‘[01m[KSdvSerialNode::[01;32m[KSdvSerialNode[m[K()[m[K’:
+[01m[K/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/src/sdv_serial/src/sdv_serial_node.cpp:59:40:[m[K [01;35m[Kwarning: [m[Ktoo many arguments for format [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wformat-extra-args-Wformat-extra-args]8;;[m[K]
+   59 |       RCLCPP_ERROR(this->get_logger(), [01;35m[K"Error: "[m[K, e.what());
+      |                                        [01;35m[K^~~~~~~~~[m[K
