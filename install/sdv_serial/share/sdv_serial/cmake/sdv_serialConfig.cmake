@@ -1,1 +1,0 @@
-/home/antorresca/Desktop/CursoDirigido/SDV_ROS2/build/sdv_serial/ament_cmake_core/sdv_serialConfig.cmake
