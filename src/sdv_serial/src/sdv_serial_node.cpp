@@ -4,9 +4,7 @@
 #include <string>
 
 #include "rclcpp/rclcpp.hpp"
-#include "geometry_msgs/msg/twist.hpp"
 #include "std_msgs/msg/string.hpp"
-#include "sensor_msgs/msg/imu.hpp"
 
 #include <libserial/SerialPort.h>      // cabeceras de libserial
 
@@ -26,6 +24,8 @@ public:
   {
     this->declare_parameter<std::string>("port", "/dev/ttyACM0");
     this->declare_parameter<int>("baudrate", 921600);
+
+    
 
     port_ = this->get_parameter("port").as_string();
     int baud = this->get_parameter("baudrate").as_int();
@@ -52,12 +52,10 @@ public:
     } catch (const std::exception &e) {
       RCLCPP_ERROR(this->get_logger(), "Error abriendo/configurando serial: %s", e.what());
     }
-    try{
-      serial_port_.Write("m 1 +30 +30 \r");
-      RCLCPP_INFO(this-> get_logger(), "Comando enviado");
-    }catch (const std::exception &e) {
-      RCLCPP_ERROR(this->get_logger(), "Error: %s", e.what());
-    }
+
+    sub_ = this->create_subscription<std_msgs::msg::String>(
+      "/vel2cmd", 10, std::bind(&SdvSerialNode::topic_callback, this, std::placeholders::_1)
+    );
   }
 
   ~SdvSerialNode()
@@ -65,12 +63,20 @@ public:
     if (serial_port_.IsOpen()) {
       try { serial_port_.Close(); } catch(...) {}
     }
-  }
+  } 
 
 private:
   SerialPort serial_port_;
   std::string port_;
   rclcpp::TimerBase::SharedPtr read_timer_;
+  rclcpp::Subscription<std_msgs::msg::String>::SharedPtr sub_;
+
+
+  void topic_callback(const std_msgs::msg::String::SharedPtr msg){
+    std::string mensaje = msg->data + "\r";
+    serial_port_.Write(mensaje);
+    RCLCPP_INFO(this->get_logger(), "Mensaje enviado a Tiva: '%s'", mensaje.c_str());
+  }
 };
 
 int main(int argc, char ** argv)
