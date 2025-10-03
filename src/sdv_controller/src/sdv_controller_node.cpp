@@ -58,6 +58,15 @@ class SdvControllerNode : public rclcpp::Node{
         PWM_L = std::clamp(PWM_L,-40.0,40.0);
         PWM_R = std::clamp(PWM_R,-40.0,40.0);
 
-        RCLCPP_INFO(this->get_logger(), "PWM R=%d, L=%d", PWM_R, PWM_L);    
+        RCLCPP_INFO(this->get_logger(), "PWM R=%.2f, L=%.2f", PWM_R, PWM_L);    
     }
 };
+
+int main(int argc, char ** argv)
+{
+  rclcpp::init(argc, argv);
+  auto node = std::make_shared<SdvControllerNode>();
+  rclcpp::spin(node);
+  rclcpp::shutdown();
+  return 0;
+}
