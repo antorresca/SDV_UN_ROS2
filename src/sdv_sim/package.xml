@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>sdv_sim</name>
+  <version>0.1.0</version>
+  <description>Simulación del robot SDVUN en Ignition Gazebo con XACRO y launch files para ROS 2 Humble</description>
+  <maintainer email="tu_email@dominio.com">Tu Nombre</maintainer>
+  <license>Apache-2.0</license>
+
+  <!-- Buildtool -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- Dependencias de build -->
+  <build_depend>rclpy</build_depend>
+  <build_depend>xacro</build_depend>
+  <build_depend>robot_state_publisher</build_depend>
+  <build_depend>ros_gz_sim</build_depend>
+  <build_depend>ros_gz_interfaces</build_depend>
+  <build_depend>ros2_control</build_depend>
+  <build_depend>controller_manager</build_depend>
+  <build_depend>ros2_controllers</build_depend>
+  <build_depend>launch</build_depend>
+  <build_depend>launch_ros</build_depend>
+
+  <!-- Dependencias de ejecución -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>xacro</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+  <exec_depend>ros_gz_sim</exec_depend>
+  <exec_depend>ros_gz_interfaces</exec_depend>
+  <exec_depend>ros2_control</exec_depend>
+  <exec_depend>controller_manager</exec_depend>
+  <exec_depend>ros2_controllers</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+
+  <!-- Dependencias de test -->
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
