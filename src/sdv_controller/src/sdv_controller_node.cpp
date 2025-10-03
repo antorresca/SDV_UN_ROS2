@@ -10,17 +10,17 @@
 
 #include "sdv_controller/motor.h"
 
-class SdvController : public rclcpp::Node{
-    public: SdvController() : Node("sdv_controller"){
+class SdvControllerNode : public rclcpp::Node{
+    public: SdvControllerNode() : Node("sdv_controller"){
         RCLCPP_INFO(this->get_logger(), "Nodo 'sdv_controller' ejecutandose");
         pub_ = this->create_publisher<std_msgs::msg::String>("/vel2cmd",10);
 
         // Ejemplo: publicar cada 500ms
         timer_ = this->create_wall_timer(
             std::chrono::milliseconds(100),
-            std::bind(&SdvController::publish_message, this));
+            std::bind(&SdvControllerNode::publish_message, this));
 
-        sub_ = this->create_subscription<geometry_msgs::msg::Twist>("/cmd_vel",10, std::bind(&SdvController::topic_callback, this, std::placeholders::_1));
+        sub_ = this->create_subscription<geometry_msgs::msg::Twist>("/cmd_vel",10, std::bind(&SdvControllerNode::topic_callback, this, std::placeholders::_1));
 
         motor_left  = std::make_shared<Motor>(0.075, false);
         motor_right = std::make_shared<Motor>(0.075, true); 
