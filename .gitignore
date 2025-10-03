@@ -3,3 +3,4 @@ src/.vscode/
 install/
 build/
 log/
+SDVSerialCommunication/
