@@ -17,7 +17,7 @@ class SdvController : public rclcpp::Node{
 
         // Ejemplo: publicar cada 500ms
         timer_ = this->create_wall_timer(
-            std::chrono::milliseconds(500),
+            std::chrono::milliseconds(100),
             std::bind(&SdvController::publish_message, this));
 
         sub_ = this->create_subscription<geometry_msgs::msg::Twist>("/cmd_vel",10, std::bind(&SdvController::topic_callback, this, std::placeholders::_1));

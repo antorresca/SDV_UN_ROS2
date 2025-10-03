@@ -11,19 +11,19 @@ class SdvPruebas(Node):
             String,
             '/vel2cmd',
             10)
-        timer_sec = 0.5 #Verificar
+        timer_sec = 0.1 #Verificar (Con 0.1 funciona adecuadamente al colocar 'mt 1' en la tiva)
         self.timer = self.create_timer(timer_sec, self.timer_callback)
         self.i = 0
 
     def timer_callback(self):
         msg = String()
         vel = 20
-        if self.i >= 0 and self.i<5:
+        if self.i >= 0 and self.i<50:
             msg.data = "m 1 -"+str(vel)+" -"+str(vel)
-        elif self.i >=5 and self.i<10:
+        elif self.i >=50 and self.i<100:
             msg.data = "m 1 "+str(vel)+" "+str(vel)
         self.pub.publish(msg)
-        if self.i == 9:
+        if self.i == 99:
             self.i = 0
         else:
             self.i += 1
