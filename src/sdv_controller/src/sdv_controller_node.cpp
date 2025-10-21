@@ -47,7 +47,7 @@ class SdvControllerNode : public rclcpp::Node{
         double wheel_base = 0.32;  //m
 
         PWM_R = vx/wheel_radio + (wheel_base*wz)/wheel_radio;
-        PWM_R = vx/wheel_radio - (wheel_base*wz)/wheel_radio;
+        PWM_L = vx/wheel_radio - (wheel_base*wz)/wheel_radio;
 
         PWM_L = std::clamp(PWM_L,-40.0,40.0);
         PWM_R = std::clamp(PWM_R,-40.0,40.0);
