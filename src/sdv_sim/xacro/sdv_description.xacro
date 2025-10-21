@@ -78,67 +78,56 @@
   <xacro:macro name="add_4_wheels" params="base_link wheel_visual x_wheel y_wheel z_wheel">
     <!-- Front Right Wheel -->
     <xacro:w_link name="front_right_wheel_link" vis_mesh="${wheel_visual}" />
-    <xacro:m_joint name="front_right_wheel_joint" type="continuous" origin_xyz="${x_wheel} -${y_wheel} ${z_wheel}" origin_rpy="0 ${pi_val/2} ${pi_val/2}" axis="0 0 1" parent="${base_link}" child="front_right_wheel_link" />
+    <xacro:m_joint name="front_right_wheel_joint" type="continuous"
+                   origin_xyz="${x_wheel} -${y_wheel} ${z_wheel}"
+                   origin_rpy="0 0 0" axis="0 0 ${pi/2}"
+                   parent="${base_link}" child="front_right_wheel_link" />
     <!-- Front Left Wheel -->
     <xacro:w_link name="front_left_wheel_link" vis_mesh="${wheel_visual}" />
-    <xacro:m_joint name="front_left_wheel_joint" type="continuous" origin_xyz="${x_wheel} ${y_wheel} ${z_wheel}" origin_rpy="0 ${pi_val/2} -${pi_val/2}" axis="0 0 -1" parent="${base_link}" child="front_left_wheel_link" />
+    <xacro:m_joint name="front_left_wheel_joint" type="continuous"
+                   origin_xyz="${x_wheel} ${y_wheel} ${z_wheel}"
+                   origin_rpy="0 0 0" axis="0 0 ${pi/2}"
+                   parent="${base_link}" child="front_left_wheel_link" />
     <!-- Back Right Wheel -->
     <xacro:w_link name="back_right_wheel_link" vis_mesh="${wheel_visual}" />
-    <xacro:m_joint name="back_right_wheel_joint" type="continuous" origin_xyz="-${x_wheel} -${y_wheel} ${z_wheel}" origin_rpy="0 ${pi_val/2} ${pi_val/2}" axis="0 0 1" parent="${base_link}" child="back_right_wheel_link" />
+    <xacro:m_joint name="back_right_wheel_joint" type="continuous"
+                   origin_xyz="-${x_wheel} -${y_wheel} ${z_wheel}"
+                   origin_rpy="0 0 0" axis="0 0 ${pi/2}"
+                   parent="${base_link}" child="back_right_wheel_link" />
     <!-- Back Left Wheel -->
     <xacro:w_link name="back_left_wheel_link" vis_mesh="${wheel_visual}" />
-    <xacro:m_joint name="back_left_wheel_joint" type="continuous" origin_xyz="-${x_wheel} ${y_wheel} ${z_wheel}" origin_rpy="0 ${pi_val/2} -${pi_val/2}" axis="0 0 -1" parent="${base_link}" child="back_left_wheel_link" />
+    <xacro:m_joint name="back_left_wheel_joint" type="continuous"
+                   origin_xyz="-${x_wheel} ${y_wheel} ${z_wheel}"
+                   origin_rpy="0 0 0" axis="0 0 ${pi/2}"
+                   parent="${base_link}" child="back_left_wheel_link" />
   </xacro:macro>
 
   <!-- ================= LINKS ================= -->
   <!-- Base -->
   <link name="base_link">
-    <inertial>
-      <mass value="0.001"/>
-      <origin xyz="0 0 0" rpy="0 0 0"/>
-      <inertia ixx="0.0001" ixy="0.0" ixz="0.0" iyy="0.0001" iyz="0.0" izz="0.0001"/>
-    </inertial>
+    <xacro:inertial_m mass="${mass}" ine_xyz="${base_ine_xyz}"
+                      ixx="${base_ixx}" iyy="${base_iyy}" izz="${base_izz}"
+                      ixy="${base_ixy}" ixz="${base_ixz}" iyz="${base_iyz}" />
+    <xacro:visual_m vis_rpy="0 0 0" vis_xyz="0 0 ${z_base_elev}"
+                    vis_mesh="package://sdv_sim/models/sdvun/sdvun1/meshes/base.dae" />
+    <xacro:collision_m co_xyz="0 0 ${z_base_elev}" co_rpy="0 0 0"
+                       col_mesh="package://sdv_sim/models/sdvun/sdvun1/meshes/collision.dae" />
   </link>
-
-  <!-- Chasis -->
-  <link name="chasis_link">
-    <visual>
-      <geometry>
-        <mesh filename="package://sdv_sim/models/sdvun/sdvun1/meshes/base.dae"/>
-      </geometry>
-    </visual>
-    <collision>
-      <geometry>
-        <mesh filename="package://sdv_sim/models/sdvun/sdvun1/meshes/collision.dae"/>
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="${mass}"/>
-      <inertia ixx="${base_ixx}" iyy="${base_iyy}" izz="${base_izz}" ixy="${base_ixy}" ixz="${base_ixz}" iyz="${base_iyz}"/>
-    </inertial>
-  </link>
-
-  <joint name="base_to_chasis_joint" type="fixed">
-    <parent link="base_link"/>
-    <child link="chasis_link"/>
-    <origin xyz="0 0 ${z_base_elev}" rpy="0 0 0"/>
-  </joint>
 
   <!-- ================= RUEDAS ================= -->
-  <xacro:add_4_wheels base_link="chasis_link"
+  <xacro:add_4_wheels base_link="base_link"
                       wheel_visual="package://sdv_sim/models/sdvun/common/meshes/wheel.dae"
-                      x_wheel="${x_wheel}" y_wheel="${y_wheel}" z_wheel="${wheel_radius}" />
+                      x_wheel="${x_wheel}" y_wheel="${y_wheel}" z_wheel="0" />
 
   <!-- ================= SENSORES ================= -->
   <!-- LIDAR -->
   <link name="laser_sensor_link"/>
-  <joint name="laser_joint" type="fixed">
-    <parent link="chasis_link"/>
-    <child link="laser_sensor_link"/>
-    <origin xyz="${laser_x} ${laser_y} ${laser_z}" rpy="0 0 0"/>
-  </joint>
+  <xacro:m_joint name="laser_joint" type="fixed"
+                 origin_xyz="${laser_x} ${laser_y} ${laser_z}" origin_rpy="0 0 0"
+                 axis="0 0 1"
+                 parent="base_link" child="laser_sensor_link" />
 
-  <gazebo reference="laser_sensor_link" >
+  <gazebo reference="laser_sensor_link">
     <sensor type="ray" name="laser_sensor">
       <update_rate>8</update_rate>
       <ray>
@@ -151,7 +140,7 @@
         </scan>
       </ray>
       <plugin name="ign_laser" filename="ignition_ros2_laser_sensor">
-        <ros_topi_valc>scan</ros_topi_valc>
+        <ros_topic>scan</ros_topic>
         <frame_name>laser_sensor_link</frame_name>
       </plugin>
     </sensor>
@@ -159,16 +148,15 @@
 
   <!-- IMU -->
   <link name="imu_sensor_link"/>
-  <joint name="imu_joint" type="fixed">
-    <parent link="chasis_link"/>
-    <child link="imu_sensor_link"/>
-    <origin xyz="0 0 ${z_imu}" rpy="0 0 0"/>
-  </joint>
+  <xacro:m_joint name="imu_joint" type="fixed"
+                 origin_xyz="0 0 ${z_imu}" origin_rpy="0 0 0"
+                 axis="0 0 1"
+                 parent="base_link" child="imu_sensor_link" />
 
   <gazebo reference="imu_sensor_link">
     <sensor type="imu" name="imu_sensor">
       <plugin name="ign_imu" filename="ignition_ros2_imu_sensor">
-        <ros_topi_valc>imu</ros_topi_valc>
+        <ros_topic>imu</ros_topic>
         <frame_name>imu_sensor_link</frame_name>
       </plugin>
     </sensor>
