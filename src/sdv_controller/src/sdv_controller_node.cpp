@@ -60,9 +60,9 @@ class SdvControllerNode : public rclcpp::Node{
         double w_wheel =  V/wheel_radio;
 
         if(Side){ //If Side == True, it's right wheel
-            w_wheel += (wheel_base*W)/wheel_radio;
-        }else{
             w_wheel -= (wheel_base*W)/wheel_radio;
+        }else{
+            w_wheel += (wheel_base*W)/wheel_radio;
         };
 
         if(w_wheel>0){
