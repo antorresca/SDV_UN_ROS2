@@ -1,165 +1,313 @@
 <?xml version="1.0"?>
-<robot name="sdvun1" xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="sdvun" xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <xacro:arg name="namespace" default="sdvun"/>
+    <xacro:arg name="use_sim_time" default="true"/>
+    
+    <xacro:property name="namespace_x" value="$(arg namespace)"/>
+    <xacro:property name="prefix" value=""/>
+    
+    <xacro:if value="${namespace_x != '' and namespace_x != '/'}">
+        <xacro:property name="prefix" value="${namespace_x}/"/>
+    </xacro:if>
+    
+    <xacro:property name="pi_val" value="3.14159265359"/>
 
-  <!-- ================= PROPIEDADES ================= -->
-  <xacro:property name="z_base_elev" value="0.075"/>
-  <xacro:property name="mass" value="13.676"/>
-  <xacro:property name="base_ine_xyz" value="0.00 0.00 0.115223"/>
-  <xacro:property name="base_ixx" value="0.207703686"/>
-  <xacro:property name="base_iyy" value="0.402153855"/>
-  <xacro:property name="base_izz" value="0.396408984"/>
-  <xacro:property name="base_ixy" value="0.001009187"/>
-  <xacro:property name="base_ixz" value="-0.084130383"/>
-  <xacro:property name="base_iyz" value="0.000169123"/>
-  <xacro:property name="wheel_radius" value="0.075"/>
-  <xacro:property name="x_wheel" value="0.151269"/>
-  <xacro:property name="y_wheel" value="0.169"/>
-  <xacro:property name="laser_x" value="0.255"/>
-  <xacro:property name="laser_y" value="0.0"/>
-  <xacro:property name="laser_z" value="${0.334371 + z_base_elev}"/>
-  <xacro:property name="z_imu" value="${0.133339 + z_base_elev}"/>
-  <xacro:property name="pi_val" value="3.14159265359"/>
+    <xacro:property name="base_visual" value="package://sdv_sim/models/sdvun/sdvun1/meshes/base.dae" />
+    <xacro:property name="base_collision" value="package://sdv_sim/models/sdvun/sdvun1/meshes/collision.dae" />
+    <xacro:property name="wheel_visual" value="package://sdv_sim/models/sdvun/common/meshes/wheel.dae" />
 
-  <!-- ================= MACROS ================= -->
-  <!-- Visual Macro -->
-  <xacro:macro name="visual_m" params="vis_rpy vis_xyz vis_mesh">
-    <visual>
-      <origin rpy="${vis_rpy}" xyz="${vis_xyz}" />
-      <geometry>
-        <mesh filename="${vis_mesh}" scale="1.0 1.0 1.0" />
-      </geometry>
-    </visual>
-  </xacro:macro>
+    <xacro:property name="z_base_elev" value="0.075" />
+    <xacro:property name="mass" value="13.676" />
+    <xacro:property name="base_ine_xyz" value="0.00 0.00 0.115223" />
+    <xacro:property name="base_ixx" value="0.207703686" />
+    <xacro:property name="base_iyy" value="0.402153855" />
+    <xacro:property name="base_izz" value="0.396408984" />
+    <xacro:property name="base_ixy" value="0.001009187" />
+    <xacro:property name="base_ixz" value="-0.084130383" />
+    <xacro:property name="base_iyz" value="0.000169123" />
+    
+    <xacro:property name="x_wheel" value="0.151269" />
+    <xacro:property name="y_wheel" value="0.169" />
+    <xacro:property name="z_wheel" value="0.075" />
+    <xacro:property name="wheel_diameter" value="0.150" />
+    <xacro:property name="wheel_radius" value="${wheel_diameter/2}"/>
+    <xacro:property name="wheel_separation" value="0.338" /> <xacro:property name="skid_command_topic" value="${prefix}mobile_base/commands/velocity" />
+    <xacro:property name="skid_odometry_topic" value="${prefix}wheel_odom" />
+    <xacro:property name="skid_odometry_frame" value="odom" />
 
-  <!-- Inertial Macro -->
-  <xacro:macro name="inertial_m" params="mass ine_xyz ixx iyy izz ixy ixz iyz">
-    <inertial>
-      <mass value="${mass}" />
-      <origin xyz="${ine_xyz}" />
-      <inertia ixx="${ixx}" iyy="${iyy}" izz="${izz}" ixy="${ixy}" ixz="${ixz}" iyz="${iyz}" />
-    </inertial>
-  </xacro:macro>
+    <xacro:property name="x_laser" value="0.255" />
+    <xacro:property name="y_laser" value="0.0" />
+    <xacro:property name="z_laser" value="${0.334371 + z_base_elev}" />
+    <xacro:property name="scan_topic" value="${prefix}scan" />
+    <xacro:property name="laser_min_angle" value="-3.14159274101" />
+    <xacro:property name="laser_max_angle" value="3.14159274101" />
+    <xacro:property name="laser_update_rate" value="8" />
+    <xacro:property name="laser_samples" value="1440" />
 
-  <!-- Collision Macro -->
-  <xacro:macro name="collision_m" params="co_xyz co_rpy col_mesh">
-    <collision>
-      <origin xyz="${co_xyz}" rpy="${co_rpy}" />
-      <geometry>
-        <mesh filename="${col_mesh}" scale="1.0 1.0 1.0" />
-      </geometry>
-    </collision>
-  </xacro:macro>
+    <xacro:property name="z_imu" value="${0.133339 + z_base_elev}" />
+    <xacro:property name="imu_topic" value="${prefix}imu" />
+    <xacro:property name="imu_service" value="${prefix}imu_service" />
+    <xacro:property name="base_footprint_frame" value="base_footprint" />
 
-  <!-- Wheel Link Macro -->
-  <xacro:macro name="w_link" params="name vis_mesh">
-    <link name="${name}">
-      <xacro:visual_m vis_rpy="0 0 0" vis_xyz="0 0 0" vis_mesh="${vis_mesh}" />
-      <xacro:inertial_m mass="0.416108" ine_xyz="0 0 0" ixx="0.000394174617" iyy="0.000394174618" izz="0.000599770188" ixy="0" ixz="0" iyz="0" />
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 0" />
-        <geometry>
-          <cylinder length=".0453" radius=".075" />
-        </geometry>
-      </collision>
+
+    <xacro:macro name="visual_m" params="vis_rpy vis_xyz vis_mesh">
+        <visual>
+            <origin rpy="${vis_rpy}" xyz="${vis_xyz}" />
+            <geometry>
+                <mesh filename="${vis_mesh}" scale="1.0 1.0 1.0" />
+            </geometry>
+        </visual>
+    </xacro:macro>
+
+    <xacro:macro name="inertial_m" params="mass ine_xyz ixx iyy izz ixy ixz iyz">
+        <inertial>
+            <mass value="${mass}" />
+            <origin xyz="${ine_xyz}" />
+            <inertia ixx="${ixx}" iyy="${iyy}" izz="${izz}" ixy="${ixy}" ixz="${ixz}" iyz="${iyz}" />
+        </inertial>
+    </xacro:macro>
+
+    <xacro:macro name="collision_m" params="co_xyz co_rpy col_mesh">
+        <collision>
+            <origin xyz="${co_xyz}" rpy="${co_rpy}" />
+            <geometry>
+                <mesh filename="${col_mesh}" scale="1.0 1.0 1.0" />
+            </geometry>
+        </collision>
+    </xacro:macro>
+
+    <xacro:macro name="g_link" params="name vis_rpy vis_xyz vis_mesh mass ine_xyz ixx iyy izz ixy ixz iyz co_xyz co_rpy col_mesh ">
+        <link name="${name}">
+            <xacro:visual_m vis_rpy="${vis_rpy}" vis_xyz="${vis_xyz}" vis_mesh="${vis_mesh}" />
+            <xacro:inertial_m mass="${mass}" ine_xyz="${ine_xyz}" ixx="${ixx}" iyy="${iyy}" izz="${izz}" ixy="${ixy}" ixz="${ixz}" iyz="${iyz}" />
+            <xacro:collision_m co_xyz="${co_xyz}" co_rpy="${co_rpy}" col_mesh="${col_mesh}" />
+        </link>
+    </xacro:macro>
+
+    <xacro:macro name="nv_link" params="name">
+        <link name="${name}">
+            <xacro:inertial_m mass="1e-5" ine_xyz="0 0 0" ixx="1e-6" iyy="1e-6" izz="1e-6" ixy="0" ixz="0" iyz="0" />
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <box size="0.0001 0.0001 0.0001" />
+                </geometry>
+            </collision>
+        </link>
+    </xacro:macro>
+
+    <xacro:macro name="m_joint" params="name type axis origin_xyz origin_rpy parent child">
+        <joint name="${name}" type="${type}">
+            <origin xyz="${origin_xyz}" rpy="${origin_rpy}" />
+            <axis xyz="${axis}" />
+            <parent link="${parent}" />
+            <child link="${child}" />
+        </joint>
+    </xacro:macro>
+
+    <xacro:macro name="w_link" params="name vis_mesh">
+        <link name="${name}">
+            <xacro:visual_m vis_rpy="0 0 0" vis_xyz="0 0 0" vis_mesh="${vis_mesh}" />
+            <xacro:inertial_m mass="0.416108" ine_xyz="0 0 0" ixx="0.000394174617" iyy="0.000394174618" izz="0.000599770188" ixy="0" ixz="0" iyz="0" />
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                    <cylinder length=".0453" radius="${wheel_radius}" />
+                </geometry>
+            </collision>
+        </link>
+        <gazebo reference="${name}">
+            <kp>1000000.0</kp>
+            <kd>1.0</kd>
+            <mu1>0.4</mu1>
+            <mu2>0.4</mu2>
+            <maxVel>0.0</maxVel>
+            <minDepth>0.001</minDepth>
+        </gazebo>
+    </xacro:macro>
+
+    <xacro:macro name="add_4_wheels" params="base_link wheel_visual x_wheel y_wheel z_wheel">
+        <xacro:w_link name="front_right_wheel_link" vis_mesh="${wheel_visual}" />
+        <xacro:m_joint name="front_right_wheel_joint" type="continuous" origin_xyz="${x_wheel} -${y_wheel} ${z_wheel}" origin_rpy="0 ${pi_val/2} ${pi_val/2}" axis="0 0 1" parent="${base_link}" child="front_right_wheel_link" />
+        <xacro:w_link name="front_left_wheel_link" vis_mesh="${wheel_visual}" />
+        <xacro:m_joint name="front_left_wheel_joint" type="continuous" origin_xyz="${x_wheel} ${y_wheel} ${z_wheel}" origin_rpy="0 ${pi_val/2} -${pi_val/2}" axis="0 0 -1" parent="${base_link}" child="front_left_wheel_link" />
+        <xacro:w_link name="back_right_wheel_link" vis_mesh="${wheel_visual}" />
+        <xacro:m_joint name="back_right_wheel_joint" type="continuous" origin_xyz="-${x_wheel} -${y_wheel} ${z_wheel}" origin_rpy="0 ${pi_val/2} ${pi_val/2}" axis="0 0 1" parent="${base_link}" child="back_right_wheel_link" />
+        <xacro:w_link name="back_left_wheel_link" vis_mesh="${wheel_visual}" />
+        <xacro:m_joint name="back_left_wheel_joint" type="continuous" origin_xyz="-${x_wheel} ${y_wheel} ${z_wheel}" origin_rpy="0 ${pi_val/2} -${pi_val/2}" axis="0 0 -1" parent="${base_link}" child="back_left_wheel_link" />
+    </xacro:macro>
+
+    <link name="${base_footprint_frame}"/>
+    
+    <link name="base_link">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.001 0.001 0.001" />
+            </geometry>
+        </visual>
     </link>
-  </xacro:macro>
 
-  <!-- Joint Macro -->
-  <xacro:macro name="m_joint" params="name type axis origin_xyz origin_rpy parent child">
-    <joint name="${name}" type="${type}">
-      <origin xyz="${origin_xyz}" rpy="${origin_rpy}" />
-      <axis xyz="${axis}" />
-      <parent link="${parent}" />
-      <child link="${child}" />
+    <joint name="base_footprint_joint" type="fixed">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <parent link="${base_footprint_frame}"/>
+        <child link="base_link"/>
     </joint>
-  </xacro:macro>
 
-  <!-- Add 4 Wheels Macro -->
-  <xacro:macro name="add_4_wheels" params="base_link wheel_visual x_wheel y_wheel z_wheel">
-    <!-- Front Right Wheel -->
-    <xacro:w_link name="front_right_wheel_link" vis_mesh="${wheel_visual}" />
-    <xacro:m_joint name="front_right_wheel_joint" type="continuous"
-                   origin_xyz="${x_wheel} -${y_wheel} ${z_wheel}"
-                   origin_rpy="0 0 0" axis="0 0 ${pi/2}"
-                   parent="${base_link}" child="front_right_wheel_link" />
-    <!-- Front Left Wheel -->
-    <xacro:w_link name="front_left_wheel_link" vis_mesh="${wheel_visual}" />
-    <xacro:m_joint name="front_left_wheel_joint" type="continuous"
-                   origin_xyz="${x_wheel} ${y_wheel} ${z_wheel}"
-                   origin_rpy="0 0 0" axis="0 0 ${pi/2}"
-                   parent="${base_link}" child="front_left_wheel_link" />
-    <!-- Back Right Wheel -->
-    <xacro:w_link name="back_right_wheel_link" vis_mesh="${wheel_visual}" />
-    <xacro:m_joint name="back_right_wheel_joint" type="continuous"
-                   origin_xyz="-${x_wheel} -${y_wheel} ${z_wheel}"
-                   origin_rpy="0 0 0" axis="0 0 ${pi/2}"
-                   parent="${base_link}" child="back_right_wheel_link" />
-    <!-- Back Left Wheel -->
-    <xacro:w_link name="back_left_wheel_link" vis_mesh="${wheel_visual}" />
-    <xacro:m_joint name="back_left_wheel_joint" type="continuous"
-                   origin_xyz="-${x_wheel} ${y_wheel} ${z_wheel}"
-                   origin_rpy="0 0 0" axis="0 0 ${pi/2}"
-                   parent="${base_link}" child="back_left_wheel_link" />
-  </xacro:macro>
+    <xacro:g_link 
+        name="chasis_link" 
+        vis_rpy="0 0 0" 
+        vis_xyz="0 0 0" 
+        vis_mesh="${base_visual}" 
+        mass="${mass}" 
+        ine_xyz="${base_ine_xyz}" 
+        ixx="${base_ixx}" 
+        iyy="${base_iyy}" 
+        izz="${base_izz}" 
+        ixy="${base_ixy}" 
+        ixz="${base_ixz}" 
+        iyz="${base_iyz}" 
+        co_xyz="0 0 0" 
+        co_rpy="0 0 0" 
+        col_mesh="${base_collision}" 
+    />
+    
+    <xacro:m_joint 
+        name="base_to_chasis_joint" 
+        type="fixed" 
+        origin_xyz="0 0 ${z_base_elev}" 
+        origin_rpy="0 0 0" 
+        axis="0 0 1" 
+        parent="base_link" 
+        child="chasis_link" 
+    />
 
-  <!-- ================= LINKS ================= -->
-  <!-- Base -->
-  <link name="base_link">
-    <xacro:inertial_m mass="${mass}" ine_xyz="${base_ine_xyz}"
-                      ixx="${base_ixx}" iyy="${base_iyy}" izz="${base_izz}"
-                      ixy="${base_ixy}" ixz="${base_ixz}" iyz="${base_iyz}" />
-    <xacro:visual_m vis_rpy="0 0 0" vis_xyz="0 0 ${z_base_elev}"
-                    vis_mesh="package://sdv_sim/models/sdvun/sdvun1/meshes/base.dae" />
-    <xacro:collision_m co_xyz="0 0 ${z_base_elev}" co_rpy="0 0 0"
-                       col_mesh="package://sdv_sim/models/sdvun/sdvun1/meshes/collision.dae" />
-  </link>
+    <xacro:add_4_wheels 
+        base_link="base_link" 
+        wheel_visual="${wheel_visual}" 
+        x_wheel="${x_wheel}" 
+        y_wheel="${y_wheel}" 
+        z_wheel="${z_wheel}" 
+    />
 
-  <!-- ================= RUEDAS ================= -->
-  <xacro:add_4_wheels base_link="base_link"
-                      wheel_visual="package://sdv_sim/models/sdvun/common/meshes/wheel.dae"
-                      x_wheel="${x_wheel}" y_wheel="${y_wheel}" z_wheel="0" />
+    <xacro:nv_link name="laser_sensor_link" />
+    
+    <xacro:m_joint 
+        name="laser_joint" 
+        type="fixed" 
+        origin_xyz="${x_laser} ${y_laser} ${z_laser}" 
+        origin_rpy="0 0 0" 
+        axis="0 0 1" 
+        parent="base_link" 
+        child="laser_sensor_link" 
+    />
 
-  <!-- ================= SENSORES ================= -->
-  <!-- LIDAR -->
-  <link name="laser_sensor_link"/>
-  <xacro:m_joint name="laser_joint" type="fixed"
-                 origin_xyz="${laser_x} ${laser_y} ${laser_z}" origin_rpy="0 0 0"
-                 axis="0 0 1"
-                 parent="base_link" child="laser_sensor_link" />
+    <xacro:nv_link name="imu_sensor_link" />
+    
+    <xacro:m_joint 
+        name="imu_joint" 
+        type="fixed" 
+        origin_xyz="0.0 0.0 ${z_imu}" 
+        origin_rpy="0 0 0" 
+        axis="0 0 1" 
+        parent="base_link" 
+        child="imu_sensor_link" 
+    />
 
-  <gazebo reference="laser_sensor_link">
-    <sensor type="ray" name="laser_sensor">
-      <update_rate>8</update_rate>
-      <ray>
-        <scan>
-          <horizontal>
-            <samples>1440</samples>
-            <min_angle>-3.14159274101</min_angle>
-            <max_angle>3.14159274101</max_angle>
-          </horizontal>
-        </scan>
-      </ray>
-      <plugin name="ign_laser" filename="ignition_ros2_laser_sensor">
-        <ros_topic>scan</ros_topic>
-        <frame_name>laser_sensor_link</frame_name>
-      </plugin>
-    </sensor>
-  </gazebo>
+    <gazebo>
+        <plugin name="diff_drive_controller" filename="libgazebo_ros_diff_drive.so">
+            <update_rate>100.0</update_rate>
+            
+            <left_joint>front_left_wheel_joint, back_left_wheel_joint</left_joint>
+            <right_joint>front_right_wheel_joint, back_right_wheel_joint</right_joint>
+            
+            <wheel_separation>${wheel_separation}</wheel_separation>
+            <wheel_radius>${wheel_radius}</wheel_radius>
+            <publish_wheel_tf>false</publish_wheel_tf>
+            <publish_wheel_joint_state>true</publish_wheel_joint_state>
+            
+            <command_topic>${skid_command_topic}</command_topic>
+            <odom_topic>${skid_odometry_topic}</odom_topic>
+            <odom_frame>${skid_odometry_frame}</odom_frame>
+            <robot_base_frame>base_link</robot_base_frame>
+            <publish_odom_tf>false</publish_odom_tf>
+            
+            <ros_parameters_override_namespace>/</ros_parameters_override_namespace>
+            <interface_name>cmd_vel</interface_name>
+            
+            <ros>
+                <namespace>${namespace_x}</namespace>
+            </ros>
+        </plugin>
+    </gazebo>
 
-  <!-- IMU -->
-  <link name="imu_sensor_link"/>
-  <xacro:m_joint name="imu_joint" type="fixed"
-                 origin_xyz="0 0 ${z_imu}" origin_rpy="0 0 0"
-                 axis="0 0 1"
-                 parent="base_link" child="imu_sensor_link" />
+    <gazebo reference="laser_sensor_link">
+        <sensor name="laser" type="ray">
+            <pose>0 0 0 0 0 0</pose>
+            <visualize>false</visualize>
+            <update_rate>${laser_update_rate}</update_rate>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>${laser_samples}</samples>
+                        <resolution>1</resolution>
+                        <min_angle>${laser_min_angle}</min_angle>
+                        <max_angle>${laser_max_angle}</max_angle>
+                    </horizontal>
+                </scan>
+                <range>
+                    <min>0.1</min>
+                    <max>20.0</max>
+                    <resolution>0.01</resolution>
+                </range>
+            </ray>
+            <plugin name="gazebo_ros_ray_sensor_controller" filename="libgazebo_ros_ray_sensor.so">
+                <ros>
+                    <argument>--ros-args -r __ns:=/${namespace_x}</argument> 
+                    <namespace>${namespace_x}</namespace>
+                    <argument>--ros-args -r ~/out:=${scan_topic}</argument>
+                </ros>
+                <output_type>sensor_msgs/LaserScan</output_type>
+                <frame_name>laser_sensor_link</frame_name>
+            </plugin>
+        </sensor>
+    </gazebo>
 
-  <gazebo reference="imu_sensor_link">
-    <sensor type="imu" name="imu_sensor">
-      <plugin name="ign_imu" filename="ignition_ros2_imu_sensor">
-        <ros_topic>imu</ros_topic>
-        <frame_name>imu_sensor_link</frame_name>
-      </plugin>
-    </sensor>
-  </gazebo>
-
+    <gazebo reference="imu_sensor_link">
+        <sensor type="imu" name="imu_sensor">
+            <always_on>true</always_on>
+            <update_rate>200.0</update_rate>
+            <imu>
+                <angular_velocity>
+                    <x>
+                        <noise type="gaussian">
+                            <mean>0.0</mean>
+                            <stddev>2e-4</stddev>
+                            <bias_mean>0.0000075</bias_mean>
+                            <bias_stddev>0.0000008</bias_stddev>
+                        </noise>
+                    </x>
+                </angular_velocity>
+                <linear_acceleration>
+                    <x>
+                        <noise type="gaussian">
+                            <mean>0.0</mean>
+                            <stddev>1.7e-2</stddev>
+                            <bias_mean>0.1</bias_mean>
+                            <bias_stddev>0.001</bias_stddev>
+                        </noise>
+                    </x>
+                </linear_acceleration>
+            </imu>
+            <plugin name="gazebo_ros_imu_controller" filename="libgazebo_ros_imu_sensor.so">
+                <ros>
+                    <namespace>${namespace_x}</namespace>
+                    <argument>--ros-args -r ~/out:=${imu_topic}</argument>
+                </ros>
+                <frame_name>imu_sensor_link</frame_name>
+                <initial_orientation_as_reference>false</initial_orientation_as_reference>
+            </plugin>
+        </sensor>
+    </gazebo>
+    
 </robot>
