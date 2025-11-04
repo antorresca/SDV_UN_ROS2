@@ -5,7 +5,7 @@ from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
-from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution, PythonExpression
+from launch.substitutions import Command, LaunchConfiguration, PathJoinSubstitution, PythonExpression, TextSubstitution
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -13,26 +13,32 @@ from launch.actions import IncludeLaunchDescription
 
 def generate_launch_description():
     # 1. Rutas y Nombres de Paquetes
-    # Se asume que tu paquete de descripción es 'sdv_sim'
     sdv_description_pkg = get_package_share_directory("sdv_sim") 
 
     # 2. Argumentos de Lanzamiento
+    
+    # 2a. Argumento para el modelo XACRO
     model_arg = DeclareLaunchArgument(
         name="model",
         default_value=os.path.join(sdv_description_pkg, "xacro", "sdv_description.xacro"),
         description="Absolute path to robot xacro file"
     )
 
+    # 2b. Argumento para el nombre del mundo (Cambiado a labfabex_world)
     world_name_arg = DeclareLaunchArgument(
         name="world_name",
-        default_value="empty"
+        default_value="labfabex_world" # <--- ¡MUNDO ACTUALIZADO!
     )
 
     # 3. Configuración de Entorno para Gazebo
+    
+    # Construcción de la ruta del mundo
+    # CRÍTICO: Usamos PathJoinSubstitution para la ruta y TextSubstitution para la extensión.
     world_path = PathJoinSubstitution([
         sdv_description_pkg,
         "worlds",
-        "empty.sdf"
+        # Unimos el nombre del mundo con la extensión .sdf
+        [LaunchConfiguration("world_name"), TextSubstitution(text=".sdf")] 
     ])
 
     # Directorios de modelos para Gazebo
@@ -57,7 +63,6 @@ def generate_launch_description():
 
     # 5. Nodos de Publicación de Estado (Esenciales para RViz 2)
     
-    # 5a. robot_state_publisher: Lee el URDF y publica los TFs de todos los links
     robot_state_publisher_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
@@ -66,8 +71,6 @@ def generate_launch_description():
         output="screen"
     )
     
-    # 5b. joint_state_publisher: Publica el estado inicial de los joints no-fijos (ruedas)
-    # NECESARIO para que robot_state_publisher pueda calcular las transformadas al inicio.
     joint_state_publisher_node = Node(
         package='joint_state_publisher',
         executable='joint_state_publisher',
@@ -84,7 +87,9 @@ def generate_launch_description():
             "/gz_sim.launch.py"
         ]),
         launch_arguments={
-            "gz_args": PythonExpression(["'", world_path, " -v 4 -r'"])
+            # Pasamos la ruta COMPLETA del mundo (world_path) y los argumentos de Gazebo.
+            # Al usar una lista, Launch se encarga de unirlos en la línea de comandos.
+            "gz_args": [world_path, " -v 4 -r"] 
         }.items()
     )
 
@@ -100,7 +105,6 @@ def generate_launch_description():
     )
 
     # 8. Bridge ROS-Gazebo (Para Sensores)
-    # Conecta los tópicos nativos de Gazebo con los tópicos de ROS 2.
     gz_ros2_bridge = Node(
         package="ros_gz_bridge",
         executable="parameter_bridge",
@@ -110,8 +114,6 @@ def generate_launch_description():
             "/scan@sensor_msgs/msg/LaserScan[gz.msgs.LaserScan"
         ],
         remappings=[
-            # Remapeación para conectar el tópico /imu del bridge con el tópico /imu/out 
-            # que el plugin de Gazebo publica internamente (configurado en el XACRO).
             ('/imu', '/imu/out'), 
         ],
         output="screen"
@@ -123,7 +125,7 @@ def generate_launch_description():
         world_name_arg,
         gazebo_resource_path,
         robot_state_publisher_node,
-        joint_state_publisher_node, # <--- ¡La corrección!
+        joint_state_publisher_node, 
         gazebo,
         gz_spawn_entity,
         gz_ros2_bridge
