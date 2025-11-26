@@ -1,16 +1,42 @@
 <?xml version="1.0"?>
-<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>sdv_nav</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="juagomezro@unal.edu.co">jk</maintainer>
-  <license>TODO: License declaration</license>
+  <version>0.0.1</version>
+  <description>Bringup del robot SDV: TF, URDF, Lidar, AMCL, MapServer</description>
 
-  <test_depend>ament_copyright</test_depend>
-  <test_depend>ament_flake8</test_depend>
-  <test_depend>ament_pep257</test_depend>
-  <test_depend>python3-pytest</test_depend>
+  <maintainer email="andres@example.com">Andres</maintainer>
+  <license>Apache License 2.0</license>
+
+  <!-- Build system -->
+  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_python</buildtool_depend>
+
+  <!-- Run-time dependencies -->
+  <exec_depend>rclpy</exec_depend>
+  <exec_depend>launch</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+
+  <!-- URDF -->
+  <exec_depend>urdf</exec_depend>
+  <exec_depend>robot_state_publisher</exec_depend>
+
+  <!-- TF -->
+  <exec_depend>tf2_ros</exec_depend>
+
+  <!-- Navigation -->
+  <exec_depend>nav2_map_server</exec_depend>
+  <exec_depend>nav2_amcl</exec_depend>
+  <exec_depend>nav2_lifecycle_manager</exec_depend>
+
+  <!-- Your robot packages -->
+  <exec_depend>sdv_serial</exec_depend>
+  <exec_depend>sdv_controller</exec_depend>
+
+  <!-- Lidar -->
+  <exec_depend>sick_scan_xd</exec_depend>
+
+  <!-- Maps and launch -->
+  <exec_depend>nav_msgs</exec_depend>
 
   <export>
     <build_type>ament_python</build_type>
