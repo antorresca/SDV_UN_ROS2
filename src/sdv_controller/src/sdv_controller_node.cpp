@@ -7,79 +7,132 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "geometry_msgs/msg/twist.hpp"
+#include "nav_msgs/msg/odometry.hpp"
+#include "tf2/LinearMath/Quaternion.h"
+#include "tf2_ros/transform_broadcaster.h"
+#include "geometry_msgs/msg/transform_stamped.hpp"
 
-#include "sdv_controller/motor.h"
+class SdvControllerNode : public rclcpp::Node {
+public:
+    SdvControllerNode() : Node("sdv_controller") {
+        RCLCPP_INFO(this->get_logger(), "Nodo 'sdv_controller' ejecutándose");
 
-class SdvControllerNode : public rclcpp::Node{
-    public: SdvControllerNode() : Node("sdv_controller"){
-        RCLCPP_INFO(this->get_logger(), "Nodo 'sdv_controller' ejecutandose");
-        pub_ = this->create_publisher<std_msgs::msg::String>("/vel2cmd",10);
+        pub_motor_ = this->create_publisher<std_msgs::msg::String>("/vel2cmd", 10);
+        pub_odom_  = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
 
-        // Publicar cada 100ms
+        tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
+
         timer_ = this->create_wall_timer(
-            std::chrono::milliseconds(100),
-            std::bind(&SdvControllerNode::publish_message, this));
+            std::chrono::milliseconds(50),
+            std::bind(&SdvControllerNode::update_odometry, this));
 
-        sub_ = this->create_subscription<geometry_msgs::msg::Twist>("/cmd_vel",10, std::bind(&SdvControllerNode::topic_callback, this, std::placeholders::_1));
+        sub_cmd_ = this->create_subscription<geometry_msgs::msg::Twist>(
+            "/cmd_vel", 10, 
+            std::bind(&SdvControllerNode::cmd_callback, this, std::placeholders::_1));
 
+        last_time_ = this->now();
+
+        // Inicialización pose
+        x_ = 0.0;
+        y_ = 0.0;
+        th_ = 0.0;
+
+        vx_ = 0.0;
+        wz_ = 0.0;
     }
 
-    private:
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_;
+private:
+
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr pub_motor_;
+    rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pub_odom_;
+
+    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr sub_cmd_;
     rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::Subscription<geometry_msgs::msg::Twist>::SharedPtr sub_;
 
-    double PWM_R;
-    double PWM_L;
+    std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
-    void publish_message(){
-        std_msgs::msg::String msg;
-        msg.data = "m 1 "+std::to_string((int)PWM_R)+" "+std::to_string((int)PWM_L)+" \r";
-        RCLCPP_INFO(this->get_logger(), "Publicando '%s'", msg.data.c_str());
-        pub_->publish(msg);
+    // Odometría interna
+    double x_, y_, th_;
+    double vx_, wz_;
+    rclcpp::Time last_time_;
+
+    // Parametros robot
+    double wheel_radius = 0.075;
+    double wheel_base   = 0.32;
+
+    // PWM
+    double PWM_R, PWM_L;
+
+    void cmd_callback(const geometry_msgs::msg::Twist::SharedPtr msg) {
+        vx_ = msg->linear.x;
+        wz_ = msg->angular.z;
+
+        PWM_R = vx_/wheel_radius + (wheel_base*wz_)/wheel_radius;
+        PWM_L = vx_/wheel_radius - (wheel_base*wz_)/wheel_radius;
+
+        PWM_L = std::clamp(PWM_L, -40.0, 40.0);
+        PWM_R = std::clamp(PWM_R, -40.0, 40.0);
+
+        std_msgs::msg::String motor_msg;
+        motor_msg.data = "m 1 " + std::to_string((int)PWM_R) + " " + std::to_string((int)PWM_L);
+        pub_motor_->publish(motor_msg);
     }
 
-    void topic_callback(const geometry_msgs::msg::Twist::SharedPtr msg){
-        double vx = msg->linear.x;     // m/s
-        double wz = msg->angular.z;    // rad/s
+    void update_odometry() {
+        auto now = this->now();
+        double dt = (now - last_time_).seconds();
+        last_time_ = now;
 
-        PWM_R = getPWM(vx,wz,true);
-        PWM_L = getPWM(vx,wz,false);
+        // Integración odometría
+        x_  += vx_ * cos(th_) * dt;
+        y_  += vx_ * sin(th_) * dt;
+        th_ += wz_ * dt;
 
-        PWM_L = std::clamp(PWM_L,-40.0,40.0);
-        PWM_R = std::clamp(PWM_R,-40.0,40.0);
+        // Publicar TF: odom → base_link
+        geometry_msgs::msg::TransformStamped odom_tf;
+        odom_tf.header.stamp = now;
+        odom_tf.header.frame_id = "odom";
+        odom_tf.child_frame_id  = "base_link";
 
-        RCLCPP_INFO(this->get_logger(), "PWM R=%.2f, L=%.2f", PWM_R, PWM_L);    
-    }
+        odom_tf.transform.translation.x = x_;
+        odom_tf.transform.translation.y = y_;
+        odom_tf.transform.translation.z = 0.0;
 
-    int getPWM(double V, double W,bool Side){
-        double wheel_radio = 0.075; //m
-        double wheel_base = 0.32;  //m
-        int factor = 0;
+        tf2::Quaternion q;
+        q.setRPY(0, 0, th_);
+        odom_tf.transform.rotation.x = q.x();
+        odom_tf.transform.rotation.y = q.y();
+        odom_tf.transform.rotation.z = q.z();
+        odom_tf.transform.rotation.w = q.w();
 
-        double w_wheel =  V/wheel_radio;
+        tf_broadcaster_->sendTransform(odom_tf);
 
-        if(Side){ //If Side == True, it's right wheel
-            w_wheel -= (wheel_base*W)/wheel_radio;
-        }else{
-            w_wheel += (wheel_base*W)/wheel_radio;
-        };
+        // Publicar mensaje Odometry
+        nav_msgs::msg::Odometry odom_msg;
+        odom_msg.header.stamp = now;
+        odom_msg.header.frame_id = "odom";
+        odom_msg.child_frame_id  = "base_link";
 
-        if(w_wheel>0){
-        factor = 1;
-        }else{
-        factor = -1;
-        };
+        odom_msg.pose.pose.position.x = x_;
+        odom_msg.pose.pose.position.y = y_;
+        odom_msg.pose.pose.position.z = 0.0;
 
-        return (0.8333*(30/3.141592)*abs(w_wheel)+10)*factor;
+        odom_msg.pose.pose.orientation.x = q.x();
+        odom_msg.pose.pose.orientation.y = q.y();
+        odom_msg.pose.pose.orientation.z = q.z();
+        odom_msg.pose.pose.orientation.w = q.w();
+
+        odom_msg.twist.twist.linear.x  = vx_;
+        odom_msg.twist.twist.angular.z = wz_;
+
+        pub_odom_->publish(odom_msg);
     }
 };
 
-int main(int argc, char ** argv)
-{
-  rclcpp::init(argc, argv);
-  auto node = std::make_shared<SdvControllerNode>();
-  rclcpp::spin(node);
-  rclcpp::shutdown();
-  return 0;
+int main(int argc, char ** argv) {
+    rclcpp::init(argc, argv);
+    auto node = std::make_shared<SdvControllerNode>();
+    rclcpp::spin(node);
+    rclcpp::shutdown();
+    return 0;
 }
