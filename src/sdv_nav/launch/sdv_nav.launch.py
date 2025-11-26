@@ -1,5 +1,6 @@
 from launch import LaunchDescription
-from launch_ros.actions import Node, IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription
+from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, PathJoinSubstitution
 from ament_index_python.packages import get_package_share_directory
@@ -11,7 +12,6 @@ def generate_launch_description():
     # =======================
     # PATHS
     # =======================
-    map_yaml_path = '~/SDV_UN_ROS2/src/sdv_nav/maps/LabFabEx.yaml'
 
     sdv_description_pkg = get_package_share_directory('sdv_sim')
 
@@ -20,6 +20,12 @@ def generate_launch_description():
         'launch',
         'sick_nav_350.launch.py'
     )
+
+    map_yaml_path = PathJoinSubstitution([
+        get_package_share_directory("sdv_nav"), 
+        "maps",
+        "LabFabEx.yaml"
+    ])
 
     # =======================
     # URDF / XACRO

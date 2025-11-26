@@ -7,6 +7,10 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+
 
 # Incluir directorios de cabeceras (para motor.h en include/)
 include_directories(
@@ -18,13 +22,13 @@ add_library(motor
   src/motor.cpp
 )
 target_include_directories(motor PUBLIC include)
-ament_target_dependencies(motor rclcpp std_msgs geometry_msgs sensor_msgs)
+ament_target_dependencies(motor rclcpp std_msgs geometry_msgs sensor_msgs nav_msgs tf2 tf2_ros)
 
 # Compilar el nodo principal
 add_executable(sdv_controller_node
   src/sdv_controller_node.cpp
 )
-ament_target_dependencies(sdv_controller_node rclcpp std_msgs geometry_msgs sensor_msgs)
+ament_target_dependencies(sdv_controller_node rclcpp std_msgs geometry_msgs sensor_msgs nav_msgs tf2 tf2_ros)
 
 # Enlazar el nodo con la librería motor
 target_link_libraries(sdv_controller_node motor)
