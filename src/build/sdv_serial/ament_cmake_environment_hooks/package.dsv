@@ -1,4 +1,0 @@
-source;share/sdv_serial/local_setup.bash
-source;share/sdv_serial/local_setup.dsv
-source;share/sdv_serial/local_setup.sh
-source;share/sdv_serial/local_setup.zsh

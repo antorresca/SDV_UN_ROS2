@@ -1,9 +1,0 @@
-/home/antorresca/Desktop/CursoDirigido/SDV_UN_ROS2/src/build/sdv_msgs/CMakeFiles/uninstall.dir
-/home/antorresca/Desktop/CursoDirigido/SDV_UN_ROS2/src/build/sdv_msgs/CMakeFiles/sdv_msgs_uninstall.dir
-/home/antorresca/Desktop/CursoDirigido/SDV_UN_ROS2/src/build/sdv_msgs/CMakeFiles/test.dir
-/home/antorresca/Desktop/CursoDirigido/SDV_UN_ROS2/src/build/sdv_msgs/CMakeFiles/edit_cache.dir
-/home/antorresca/Desktop/CursoDirigido/SDV_UN_ROS2/src/build/sdv_msgs/CMakeFiles/rebuild_cache.dir
-/home/antorresca/Desktop/CursoDirigido/SDV_UN_ROS2/src/build/sdv_msgs/CMakeFiles/list_install_components.dir
-/home/antorresca/Desktop/CursoDirigido/SDV_UN_ROS2/src/build/sdv_msgs/CMakeFiles/install.dir
-/home/antorresca/Desktop/CursoDirigido/SDV_UN_ROS2/src/build/sdv_msgs/CMakeFiles/install/local.dir
-/home/antorresca/Desktop/CursoDirigido/SDV_UN_ROS2/src/build/sdv_msgs/CMakeFiles/install/strip.dir
