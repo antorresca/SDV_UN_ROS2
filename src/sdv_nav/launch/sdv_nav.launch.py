@@ -28,17 +28,21 @@ def generate_launch_description():
     ])
 
 
+    # =======================
+    # TF STATIC ─ base_link → base_laser
+    # ESTE NODO CONECTA LA BASE CON EL LIDAR
+    # =======================
     cloud_tf = Node(
-    package='tf2_ros',
-    executable='static_transform_publisher',
-    name='static_tf_cloud_base',
-    output='screen',
-    arguments=[
-        '0.77', '0', '0',      # x y z (ajusta si tu LIDAR no está exactamente en el origen)
-        '0', '0', '0',      # roll pitch yaw (ajusta si está girado)
-        'base_link',        # parent
-        'cloud'             # child (frame del LIDAR)
-    ]
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='static_tf_laser_base',
+        output='screen',
+        arguments=[
+            '0.25', '0.0', '0.0',   # x y z del LIDAR respecto a base_link
+            '0', '0', '0',          # roll pitch yaw
+            'base_link',            # parent frame
+            'base_laser'           # <--- CORREGIDO: child frame debe coincidir con el scanner_frame de SICK
+        ]
     )
 
 
@@ -68,7 +72,6 @@ def generate_launch_description():
 
     # =======================
     # JOINT STATE PUBLISHER
-    # (Solo si tu robot tiene articulaciones)
     # =======================
     joint_state_pub = Node(
         package='joint_state_publisher',
@@ -78,15 +81,10 @@ def generate_launch_description():
     )
 
     # =======================
-    # TF STATIC ─ odom → base_link
+    # TF odom → base_link (DEBE SER PUBLICADO POR sdv_serial_node, NO ESTÁTICO)
+    # ELIMINADO EL odom_tf ESTÁTICO
     # =======================
-    odom_tf = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        name='static_tf_odom_base',
-        arguments=['0', '0', '0', '0', '0', '0', 'odom', 'base_link']
-    )
-
+    
     # =======================
     # SICK LIDAR
     # =======================
@@ -95,7 +93,7 @@ def generate_launch_description():
     )
 
     # =======================
-    # SERIAL NODE
+    # SERIAL NODE (Debe publicar odom → base_link)
     # =======================
     serial_node = Node(
         package='sdv_serial',
@@ -126,7 +124,7 @@ def generate_launch_description():
     )
 
     # =======================
-    # AMCL
+    # AMCL (PUBLICARÁ map → odom)
     # =======================
     amcl = Node(
         package='nav2_amcl',
@@ -165,7 +163,7 @@ def generate_launch_description():
     return LaunchDescription([
         robot_state_pub,
         joint_state_pub,
-        odom_tf,
+        # ELIMINADO: odom_tf, 
         cloud_tf,
         sick_node,
         serial_node,

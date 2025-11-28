@@ -24,7 +24,7 @@ def generate_launch_description():
             package='sick_scan_xd',
             node_executable='sick_generic_caller',
             output='log',
-            remappings=[ ('/sick_nav_350/scan', '/scan'), ], # remap laserscan messages to topic /scan, required for slam_toolbox
+            remappings=[ ('/sick_nav_350/scan', '/scan'), ],
             arguments=node_arguments,
                         parameters=[{
                 "use_odom": False,
@@ -33,12 +33,12 @@ def generate_launch_description():
                 "output_odom_topic": "",
             }]
         )
-    else: # ROS versions eloquent and earlier require "node_executable", ROS foxy and later use "executable"
+    else: # ROS versions foxy and later use "executable"
         node = Node(
             package='sick_scan_xd',
             executable='sick_generic_caller',
             output='log',
-            remappings=[ ('/sick_nav_350/scan', '/scan'), ], # remap laserscan messages to topic /scan, required for slam_toolbox
+            remappings=[ ('/sick_nav_350/scan', '/scan'), ],
             arguments=node_arguments,
             parameters=[{
                 "use_odom": False,
@@ -46,9 +46,10 @@ def generate_launch_description():
                 "publish_odom": False,
                 "output_odom_topic": "",
                 "cloud_transform": True,
-                "scanner_frame": "base_laser",    # o el frame real de tu LIDAR
+                # CORREGIDO: Este frame debe coincidir con el child frame del static_transform_publisher
+                "scanner_frame": "base_laser",
                 "publish_laserscan": True,
-                "use_published_timestamp": False  # fuerza timestamp ROS
+                "use_published_timestamp": False
             }]
 
         )
