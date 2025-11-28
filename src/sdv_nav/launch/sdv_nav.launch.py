@@ -41,7 +41,7 @@ def generate_launch_description():
             '0.25', '0.0', '0.0',   # x y z del LIDAR respecto a base_link
             '0', '0', '0',          # roll pitch yaw
             'base_link',            # parent frame
-            'base_laser'           # <--- CORREGIDO: child frame debe coincidir con el scanner_frame de SICK
+            'cloud'           # <--- CORREGIDO: child frame debe coincidir con el scanner_frame de SICK
         ]
     )
 

@@ -33,7 +33,7 @@ def generate_launch_description():
                 "output_odom_topic": "",
             }]
         )
-    else: # ROS versions foxy and later use "executable"
+    else: 
         node = Node(
             package='sick_scan_xd',
             executable='sick_generic_caller',
@@ -45,13 +45,19 @@ def generate_launch_description():
                 "publish_odom_tf": False,
                 "publish_odom": False,
                 "output_odom_topic": "",
-                "cloud_transform": True,
-                # CORREGIDO: Este frame debe coincidir con el child frame del static_transform_publisher
-                "scanner_frame": "base_laser",
+                
+                # Deshabilitar si publica una TF de cloud (a veces es cloud_transform)
+                "cloud_transform": False, # <--- CAMBIO CRÍTICO (Desactivar si es posible)
+
+                # Forzar la coherencia: el scanner_frame será el frame_id real
+                "scanner_frame": "cloud",  # <--- CORREGIDO: Usar 'cloud'
+                
+                # A veces, este es el parámetro que realmente controla el frame_id en el header:
+                "frame_id": "cloud", # <--- Añadir este por seguridad
+                
                 "publish_laserscan": True,
                 "use_published_timestamp": False
             }]
-
         )
     
     ld.add_action(node)
