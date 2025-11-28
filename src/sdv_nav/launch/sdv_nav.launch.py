@@ -34,7 +34,7 @@ def generate_launch_description():
     name='static_tf_cloud_base',
     output='screen',
     arguments=[
-        '0.25', '0', '0',      # x y z (ajusta si tu LIDAR no está exactamente en el origen)
+        '0.77', '0', '0',      # x y z (ajusta si tu LIDAR no está exactamente en el origen)
         '0', '0', '0',      # roll pitch yaw (ajusta si está girado)
         'base_link',        # parent
         'cloud'             # child (frame del LIDAR)
