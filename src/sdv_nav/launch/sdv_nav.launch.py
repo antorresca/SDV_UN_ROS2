@@ -27,6 +27,21 @@ def generate_launch_description():
         "LabFabEx.yaml"
     ])
 
+
+    cloud_tf = Node(
+    package='tf2_ros',
+    executable='static_transform_publisher',
+    name='static_tf_cloud_base',
+    output='screen',
+    arguments=[
+        '0', '0', '0',      # x y z (ajusta si tu LIDAR no está exactamente en el origen)
+        '0', '0', '0',      # roll pitch yaw (ajusta si está girado)
+        'base_link',        # parent
+        'cloud'             # child (frame del LIDAR)
+    ]
+    )
+
+
     # =======================
     # URDF / XACRO
     # =======================
@@ -151,6 +166,7 @@ def generate_launch_description():
         robot_state_pub,
         joint_state_pub,
         odom_tf,
+        cloud_tf,
         sick_node,
         serial_node,
         controller_node,
