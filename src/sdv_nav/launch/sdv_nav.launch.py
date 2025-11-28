@@ -12,7 +12,6 @@ def generate_launch_description():
     # =======================
     # PATHS
     # =======================
-
     sdv_description_pkg = get_package_share_directory('sdv_sim')
 
     sick_launch = os.path.join(
@@ -27,10 +26,8 @@ def generate_launch_description():
         "LabFabEx.yaml"
     ])
 
-
     # =======================
-    # TF STATIC ─ base_link → base_laser
-    # ESTE NODO CONECTA LA BASE CON EL LIDAR
+    # TF STATIC ─ base_link → cloud (LIDAR)
     # =======================
     cloud_tf = Node(
         package='tf2_ros',
@@ -41,10 +38,9 @@ def generate_launch_description():
             '0.25', '0.0', '0.0',   # x y z del LIDAR respecto a base_link
             '0', '0', '0',          # roll pitch yaw
             'base_link',            # parent frame
-            'cloud'           # <--- CORREGIDO: child frame debe coincidir con el scanner_frame de SICK
+            'cloud'                 # child frame (coincide con scanner_frame del SICK)
         ]
     )
-
 
     # =======================
     # URDF / XACRO
@@ -81,11 +77,6 @@ def generate_launch_description():
     )
 
     # =======================
-    # TF odom → base_link (DEBE SER PUBLICADO POR sdv_serial_node, NO ESTÁTICO)
-    # ELIMINADO EL odom_tf ESTÁTICO
-    # =======================
-    
-    # =======================
     # SICK LIDAR
     # =======================
     sick_node = IncludeLaunchDescription(
@@ -93,7 +84,7 @@ def generate_launch_description():
     )
 
     # =======================
-    # SERIAL NODE (Debe publicar odom → base_link)
+    # SERIAL NODE (publica odom → base_link)
     # =======================
     serial_node = Node(
         package='sdv_serial',
@@ -113,7 +104,7 @@ def generate_launch_description():
     )
 
     # =======================
-    # MAP SERVER
+    # MAP SERVER (solo para ver el mapa en RViz)
     # =======================
     map_server = Node(
         package='nav2_map_server',
@@ -124,52 +115,14 @@ def generate_launch_description():
     )
 
     # =======================
-    # AMCL (PUBLICARÁ map → odom)
-    # =======================
-    amcl = Node(
-        package='nav2_amcl',
-        executable='amcl',
-        name='amcl',
-        output='screen',
-        parameters=[{
-            'use_sim_time': False,
-            'scan_topic': '/scan',
-            'tf_tolerance': 1, # <--- AÑADIR/CORREGIR ESTE PARÁMETRO
-            # Parámetros básicos (puedes tunear luego)
-            'alpha1': 0.2,
-            'alpha2': 0.2,
-            'alpha3': 0.2,
-            'alpha4': 0.2,
-            'z_hit': 0.95,
-            'z_rand': 0.05
-        }]
-    )
-
-    # =======================
-    # LIFECYCLE MANAGER
-    # =======================
-    lifecycle_manager = Node(
-        package='nav2_lifecycle_manager',
-        executable='lifecycle_manager',
-        name='lifecycle_manager_localization',
-        parameters=[{
-            'autostart': True,
-            'node_names': ['map_server', 'amcl']
-        }]
-    )
-
-    # =======================
     # RETURN
     # =======================
     return LaunchDescription([
         robot_state_pub,
         joint_state_pub,
-        # ELIMINADO: odom_tf, 
         cloud_tf,
         sick_node,
         serial_node,
         controller_node,
-        map_server,
-        amcl,
-        lifecycle_manager
+        map_server
     ])
