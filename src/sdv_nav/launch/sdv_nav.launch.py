@@ -134,6 +134,7 @@ def generate_launch_description():
         parameters=[{
             'use_sim_time': False,
             'scan_topic': '/scan',
+            'tf_tolerance': 0.1, # <--- AÑADIR/CORREGIR ESTE PARÁMETRO
             # Parámetros básicos (puedes tunear luego)
             'alpha1': 0.2,
             'alpha2': 0.2,
