@@ -45,7 +45,12 @@ def generate_launch_description():
                 "publish_odom_tf": False,
                 "publish_odom": False,
                 "output_odom_topic": "",
+                "cloud_transform": True,
+                "scanner_frame": "base_laser",    # o el frame real de tu LIDAR
+                "publish_laserscan": True,
+                "use_published_timestamp": False  # fuerza timestamp ROS
             }]
+
         )
     
     ld.add_action(node)
