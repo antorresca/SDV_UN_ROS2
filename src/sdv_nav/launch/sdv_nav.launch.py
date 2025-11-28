@@ -73,22 +73,6 @@ def generate_launch_description():
     )
 
     # =======================
-    # OPTIONAL: TF STATIC ─ base_link → laser_link
-    # SOLO SI tu URDF **NO** lo tiene
-    # =======================
-    laser_tf = Node(
-        package='tf2_ros',
-        executable='static_transform_publisher',
-        name='static_tf_laser',
-        arguments=[
-            '0.20', '0', '0.15',   # REEMPLAZAR coordenadas REALES DEL LIDAR
-            '0', '0', '0',
-            'base_link',
-            'laser_link'           # Reemplazar por el frame real del SICK
-        ]
-    )
-
-    # =======================
     # SICK LIDAR
     # =======================
     sick_node = IncludeLaunchDescription(
@@ -167,7 +151,6 @@ def generate_launch_description():
         robot_state_pub,
         joint_state_pub,
         odom_tf,
-        laser_tf,           # borrar si lo tienes en el URDF
         sick_node,
         serial_node,
         controller_node,

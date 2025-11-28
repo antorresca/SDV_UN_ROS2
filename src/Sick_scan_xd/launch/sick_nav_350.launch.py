@@ -23,17 +23,29 @@ def generate_launch_description():
         node = Node(
             package='sick_scan_xd',
             node_executable='sick_generic_caller',
-            output='screen',
+            output='log',
             remappings=[ ('/sick_nav_350/scan', '/scan'), ], # remap laserscan messages to topic /scan, required for slam_toolbox
-            arguments=node_arguments
+            arguments=node_arguments,
+                        parameters=[{
+                "use_odom": False,
+                "publish_odom_tf": False,
+                "publish_odom": False,
+                "output_odom_topic": "",
+            }]
         )
     else: # ROS versions eloquent and earlier require "node_executable", ROS foxy and later use "executable"
         node = Node(
             package='sick_scan_xd',
             executable='sick_generic_caller',
-            output='screen',
+            output='log',
             remappings=[ ('/sick_nav_350/scan', '/scan'), ], # remap laserscan messages to topic /scan, required for slam_toolbox
-            arguments=node_arguments
+            arguments=node_arguments,
+            parameters=[{
+                "use_odom": False,
+                "publish_odom_tf": False,
+                "publish_odom": False,
+                "output_odom_topic": "",
+            }]
         )
     
     ld.add_action(node)
