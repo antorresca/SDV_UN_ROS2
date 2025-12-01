@@ -1,6 +1,6 @@
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
-from launch_ros.actions import Node, LifecycleNode
+from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, PathJoinSubstitution, LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
@@ -17,32 +17,22 @@ def generate_launch_description():
         description='Use simulation (Gazebo) clock if true'
     )
     
-    map_yaml_arg = DeclareLaunchArgument(
-        'map',
-        default_value=PathJoinSubstitution([
-            get_package_share_directory("sdv_nav"),
-            "maps",
-            "LabFabEx.yaml"
-        ]),
-        description='Full path to map yaml file to load'
-    )
+    map_yaml_path = PathJoinSubstitution([
+        get_package_share_directory("sdv_nav"),
+        "maps",
+        "LabFabEx.yaml"
+    ])
     
-    params_file_arg = DeclareLaunchArgument(
-        'params_file',
-        default_value=PathJoinSubstitution([
-            get_package_share_directory("sdv_nav"),
-            "config",
-            "nav2_params.yaml"
-        ]),
-        description='Full path to the ROS2 parameters file to use'
-    )
+    amcl_params_file = PathJoinSubstitution([
+        get_package_share_directory("sdv_nav"),
+        "config",
+        "amcl_fixed.yaml"  # Archivo con configuración corregida
+    ])
     
     # =======================
     # VARIABLES Y PATHS
     # =======================
     use_sim_time = LaunchConfiguration('use_sim_time')
-    map_yaml_path = LaunchConfiguration('map')
-    params_file = LaunchConfiguration('params_file')
     
     sdv_description_pkg = get_package_share_directory('sdv_sim')
     sick_launch = os.path.join(
@@ -52,48 +42,18 @@ def generate_launch_description():
     )
     
     # =======================
-    # NAV2 LIFECYCLE MANAGER
+    # TF STATIC: base_footprint → base_link (SI LO NECESITAS)
     # =======================
-    lifecycle_manager = Node(
-        package='nav2_lifecycle_manager',
-        executable='lifecycle_manager',
-        name='lifecycle_manager_localization',
+    base_tf = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='static_tf_base_footprint',
         output='screen',
-        parameters=[
-            {'use_sim_time': use_sim_time},
-            {'autostart': True},
-            {'node_names': ['map_server', 'amcl']}
-        ]
-    )
-    
-    # =======================
-    # MAP SERVER (como LifecycleNode)
-    # =======================
-    map_server = LifecycleNode(
-        package='nav2_map_server',
-        executable='map_server',
-        name='map_server',
-        namespace='',
-        output='screen',
-        parameters=[
-            {'use_sim_time': use_sim_time},
-            {'yaml_filename': map_yaml_path}
-        ]
-    )
-    
-    # =======================
-    # AMCL (como LifecycleNode)
-    # =======================
-    amcl = LifecycleNode(
-        package='nav2_amcl',
-        executable='amcl',
-        name='amcl',
-        namespace='',
-        output='screen',
-        parameters=[params_file],
-        remappings=[
-            ('scan', '/scan'),
-            ('odom', '/odom'),
+        arguments=[
+            "0.0", "0.0", "0.0",
+            "0", "0", "0",
+            "base_footprint",
+            "base_link"
         ]
     )
     
@@ -106,10 +66,39 @@ def generate_launch_description():
         name='static_tf_laser_base',
         output='screen',
         arguments=[
-            "0.25", "0.0", "0.0",   # x y z del LIDAR respecto a base_link
-            "0", "0", "0",          # roll pitch yaw
-            "base_link",            # parent frame
-            "cloud"                 # child frame
+            "0.25", "0.0", "0.0",
+            "0", "0", "0",
+            "base_link",
+            "cloud"
+        ]
+    )
+    
+    # =======================
+    # MAP SERVER
+    # =======================
+    map_server = Node(
+        package='nav2_map_server',
+        executable='map_server',
+        name='map_server',
+        output='screen',
+        parameters=[
+            {'use_sim_time': use_sim_time},
+            {'yaml_filename': map_yaml_path}
+        ]
+    )
+    
+    # =======================
+    # AMCL
+    # =======================
+    amcl = Node(
+        package='nav2_amcl',
+        executable='amcl',
+        name='amcl',
+        output='screen',
+        parameters=[amcl_params_file],
+        remappings=[
+            ('scan', '/scan'),
+            ('odom', '/odom'),
         ]
     )
     
@@ -135,7 +124,7 @@ def generate_launch_description():
     )
     
     # =======================
-    # SICK LIDAR (Driver)
+    # SICK LIDAR
     # =======================
     sick_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(sick_launch)
@@ -162,25 +151,75 @@ def generate_launch_description():
     )
     
     # =======================
+    # LIFECYCLE COMMANDS
+    # =======================
+    from launch.actions import ExecuteProcess, TimerAction
+    import launch
+    
+    lifecycle_commands = [
+        TimerAction(
+            period=2.0,
+            actions=[
+                ExecuteProcess(
+                    cmd=['ros2', 'lifecycle', 'set', '/map_server', 'configure'],
+                    output='screen'
+                )
+            ]
+        ),
+        TimerAction(
+            period=3.0,
+            actions=[
+                ExecuteProcess(
+                    cmd=['ros2', 'lifecycle', 'set', '/map_server', 'activate'],
+                    output='screen'
+                )
+            ]
+        ),
+        TimerAction(
+            period=4.0,
+            actions=[
+                ExecuteProcess(
+                    cmd=['ros2', 'lifecycle', 'set', '/amcl', 'configure'],
+                    output='screen'
+                )
+            ]
+        ),
+        TimerAction(
+            period=5.0,
+            actions=[
+                ExecuteProcess(
+                    cmd=['ros2', 'lifecycle', 'set', '/amcl', 'activate'],
+                    output='screen'
+                )
+            ]
+        )
+    ]
+    
+    # =======================
     # ARGUMENTOS Y NODOS
     # =======================
     return LaunchDescription([
         # Argumentos
         use_sim_time_arg,
-        map_yaml_arg,
-        params_file_arg,
         
-        # Base Robot
-        robot_state_pub,
+        # Base Robot (solo si usas base_footprint)
+        # base_tf,  # Descomentar si necesitas base_footprint
+        
+        # Transformada LIDAR
         cloud_tf,
+        
+        # Robot State Publisher
+        robot_state_pub,
         
         # Drivers y Control
         sick_node,
         serial_node,
         controller_node,
         
-        # Nav2 Localization Stack
+        # Nav2 Localization
         map_server,
         amcl,
-        lifecycle_manager,
+        
+        # Lifecycle commands
+        *lifecycle_commands
     ])
