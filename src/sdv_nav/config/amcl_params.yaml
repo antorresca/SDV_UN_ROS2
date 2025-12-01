@@ -32,7 +32,13 @@ amcl:
     laser_max_range: -1.0
     laser_model_type: "likelihood_field"
     # Frecuencia de actualización
-    update_min_d: 0.2
-    update_min_a: 0.2
     
-    # ... (Más parámetros de AMCL si es necesario, como rangos y filtros)
+    transform_tolerance: 1.0 # Un valor conservador para permitir 1 segundo de latencia.
+                             # Si es 0.1 o 0.2 (por defecto), puede ser demasiado estricto.
+                             
+    # Tiempo máximo de espera para que las TF sean estables
+    tf_tolerance: 0.5 
+    
+    # Parámetros de actualización (para reducir la cola llena si es por exceso de mensajes)
+    update_min_d: 0.2
+    update_min_a: 0.5 # Aumenta un poco el ángulo mínimo para actualizar

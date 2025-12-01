@@ -51,7 +51,7 @@ def generate_launch_description():
         name='amcl',
         output='screen',
         parameters=[
-            {"use_sim_time": LaunchConfiguration('use_sim_time')},
+            {"use_sim_time": True},
             amcl_params_file  # Carga los parámetros del nodo AMCL
         ],
         remappings=[
