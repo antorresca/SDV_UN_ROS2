@@ -14,13 +14,13 @@
 
 class SdvControllerNode : public rclcpp::Node {
 public:
-    SdvControllerNode() : Node("sdv_controller") {
+    SdvControllerNode() : Node("sdv_controller"),
+                          tf_broadcaster_(std::make_shared<tf2_ros::TransformBroadcaster>(this)) 
+    {
         RCLCPP_INFO(this->get_logger(), "Nodo 'sdv_controller' ejecutándose");
 
         pub_motor_ = this->create_publisher<std_msgs::msg::String>("/vel2cmd", 10);
         pub_odom_  = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
-
-        tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
 
         timer_ = this->create_wall_timer(
             std::chrono::milliseconds(50),
