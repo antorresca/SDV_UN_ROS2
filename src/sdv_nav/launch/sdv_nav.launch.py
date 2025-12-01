@@ -32,7 +32,7 @@ def generate_launch_description():
         default_value=PathJoinSubstitution([
             get_package_share_directory("sdv_nav"),
             "config",
-            "nav2_params.yaml"  # Archivo de parámetros único para Nav2
+            "nav2_params.yaml"
         ]),
         description='Full path to the ROS2 parameters file to use'
     )
@@ -54,7 +54,6 @@ def generate_launch_description():
     # =======================
     # NAV2 LIFECYCLE MANAGER
     # =======================
-    # ¡ESTO ES CRÍTICO! Controla el ciclo de vida de todos los nodos de Nav2
     lifecycle_manager = Node(
         package='nav2_lifecycle_manager',
         executable='lifecycle_manager',
@@ -63,10 +62,7 @@ def generate_launch_description():
         parameters=[
             {'use_sim_time': use_sim_time},
             {'autostart': True},
-            {'node_names': [
-                'map_server',
-                'amcl'
-            ]}
+            {'node_names': ['map_server', 'amcl']}
         ]
     )
     
@@ -77,6 +73,7 @@ def generate_launch_description():
         package='nav2_map_server',
         executable='map_server',
         name='map_server',
+        namespace='',
         output='screen',
         parameters=[
             {'use_sim_time': use_sim_time},
@@ -91,11 +88,12 @@ def generate_launch_description():
         package='nav2_amcl',
         executable='amcl',
         name='amcl',
+        namespace='',
         output='screen',
-        parameters=[params_file],  # Carga TODOS los parámetros de Nav2
+        parameters=[params_file],
         remappings=[
             ('scan', '/scan'),
-            ('odom', '/odom'),  # ¡IMPORTANTE! Asegura que AMCL escuche /odom
+            ('odom', '/odom'),
         ]
     )
     
@@ -111,7 +109,7 @@ def generate_launch_description():
             "0.25", "0.0", "0.0",   # x y z del LIDAR respecto a base_link
             "0", "0", "0",          # roll pitch yaw
             "base_link",            # parent frame
-            "cloud"                 # child frame (coincide con el scanner_frame del SICK)
+            "cloud"                 # child frame
         ]
     )
     
@@ -144,7 +142,7 @@ def generate_launch_description():
     )
     
     # =======================
-    # SERIAL NODE (publica odom → base_link)
+    # SERIAL NODE
     # =======================
     serial_node = Node(
         package="sdv_serial",
@@ -181,7 +179,7 @@ def generate_launch_description():
         serial_node,
         controller_node,
         
-        # Nav2 Localization Stack (con Lifecycle Manager)
+        # Nav2 Localization Stack
         map_server,
         amcl,
         lifecycle_manager,
