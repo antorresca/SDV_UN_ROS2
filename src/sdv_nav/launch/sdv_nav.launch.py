@@ -1,13 +1,28 @@
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import Command, PathJoinSubstitution
+from launch.substitutions import Command, PathJoinSubstitution, LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
 import os
 
 
 def generate_launch_description():
+
+    # =======================
+    # DECLARACIÓN DE ARGUMENTOS (para AMCL)
+    # =======================
+    # Define la ruta al archivo de parámetros de AMCL (debes crearlo en sdv_nav/config)
+    amcl_params_file = PathJoinSubstitution([
+        get_package_share_directory("sdv_nav"),
+        "config",
+        "amcl_params.yaml" # <-- DEBES CREAR ESTE ARCHIVO
+    ])
+    
+    # Argumento para usar el tiempo de simulación (útil si usas Gazebo o similar)
+    use_sim_time = DeclareLaunchArgument(
+        'use_sim_time', default_value='false',
+        description='Use simulation (Gazebo) clock if true')
 
     # =======================
     # PATHS
@@ -25,6 +40,27 @@ def generate_launch_description():
         "maps",
         "LabFabEx.yaml"
     ])
+    
+    # =======================
+    # AMCL (Adaptive Monte Carlo Localization)
+    # =======================
+    # Este nodo publica la transformación map -> odom para cerrar el ciclo TF
+    amcl_node = Node(
+        package='nav2_amcl',
+        executable='amcl',
+        name='amcl',
+        output='screen',
+        parameters=[
+            {"use_sim_time": LaunchConfiguration('use_sim_time')},
+            amcl_params_file  # Carga los parámetros del nodo AMCL
+        ],
+        remappings=[
+            ('scan', '/scan'),  # Asegura que AMCL escuche el tópico /scan del LIDAR
+            # Agrega otros remapeos si tu odometría no está en /odom
+            # ('odom', '/tu_topico_odom'), 
+        ]
+    )
+
 
     # =======================
     # TF STATIC: base_link → cloud (LIDAR)
@@ -42,9 +78,8 @@ def generate_launch_description():
         ]
     )
 
-    # =======================
-    # URDF / XACRO
-    # =======================
+    # ... (URDF / XACRO, ROBOT STATE PUBLISHER, JOINT STATE PUBLISHER: SIN CAMBIOS) ...
+
     robot_description = {
         "robot_description": Command([
             "xacro ",
@@ -56,9 +91,6 @@ def generate_launch_description():
         ])
     }
 
-    # =======================
-    # ROBOT STATE PUBLISHER
-    # =======================
     robot_state_pub = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
@@ -66,9 +98,6 @@ def generate_launch_description():
         parameters=[robot_description]
     )
 
-    # =======================
-    # JOINT STATE PUBLISHER
-    # =======================
     joint_state_pub = Node(
         package="joint_state_publisher",
         executable="joint_state_publisher",
@@ -77,7 +106,7 @@ def generate_launch_description():
     )
 
     # =======================
-    # SICK LIDAR
+    # SICK LIDAR (Driver)
     # =======================
     sick_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(sick_launch)
@@ -104,25 +133,38 @@ def generate_launch_description():
     )
 
     # =======================
-    # MAP SERVER (solo para visualizar el mapa en RViz)
+    # MAP SERVER (Mantiene el Mapa en Memoria)
     # =======================
     map_server = Node(
         package="nav2_map_server",
         executable="map_server",
         name="map_server",
         output="screen",
-        parameters=[{"yaml_filename": map_yaml_path}]
+        parameters=[
+            {"yaml_filename": map_yaml_path},
+            # Es importante que el map_server NO publique la TF. AMCL lo hará.
+            {"frame_id": "map"} 
+        ]
     )
 
     # =======================
     # RETURN
     # =======================
     return LaunchDescription([
+        # Argumentos
+        use_sim_time,
+        
+        # Base Robot
         robot_state_pub,
         joint_state_pub,
         cloud_tf,
+        
+        # Drivers y Control
         sick_node,
         serial_node,
         controller_node,
-        map_server
+        
+        # Localización y Mapa
+        map_server,
+        amcl_node, # <-- ¡NUEVO!
     ])

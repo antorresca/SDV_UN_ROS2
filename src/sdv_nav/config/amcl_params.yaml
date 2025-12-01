@@ -1,0 +1,38 @@
+amcl:
+  ros__parameters:
+    # -------------------
+    # Frames and Topics
+    # -------------------
+    use_sim_time: false
+    # El frame del robot (debe coincidir con tu URDF)
+    base_frame_id: "base_link" 
+    # El frame publicado por tu sdv_serial_node
+    odom_frame_id: "odom" 
+    # El frame global (publicado por AMCL)
+    global_frame_id: "map"
+    
+    # -------------------
+    # Parámetros de Filtro
+    # -------------------
+    min_particles: 500
+    max_particles: 2000
+    # Inicialización: Si usas RVIZ para pose inicial, déjalo en true
+    set_initial_pose: true
+    # Inicialización: Pose inicial por defecto (0, 0, 0)
+    initial_pose:
+      x: 0.0
+      y: 0.0
+      z: 0.0
+      a: 0.0
+    
+    # -------------------
+    # Parámetros del LIDAR
+    # -------------------
+    laser_min_range: -1.0 # Usa -1.0 para el valor por defecto
+    laser_max_range: -1.0
+    laser_model_type: "likelihood_field"
+    # Frecuencia de actualización
+    update_min_d: 0.2
+    update_min_a: 0.2
+    
+    # ... (Más parámetros de AMCL si es necesario, como rangos y filtros)
