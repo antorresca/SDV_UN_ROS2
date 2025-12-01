@@ -31,27 +31,31 @@ def generate_launch_description():
         remappings=[ ('/sick_nav_350/scan', '/scan'), ],
         arguments=node_arguments,
         parameters=[{
-            # --- Parámetros de Odometría (Deshabilitados) ---
-            "use_odom": False,
-            "publish_odom_tf": False,
-            "publish_odom": False,
-            "output_odom_topic": "",
-            
-            # --- Parámetros Críticos de TF para Integración ---
-            
-            # CRÍTICO: Deshabilita la publicación de TF del sensor.
-            # Esto evita el conflicto donde el driver publica 'map -> cloud'
-            "cloud_transform": False, 
+                # --- Parámetros de Odometría (Deshabilitados) ---
+                "use_odom": False,
+                "publish_odom_tf": False,
+                "publish_odom": False,
+                "output_odom_topic": "",
+                
+                # --- Parámetros Críticos de TF para Integración (ACTUALIZADO) ---
+                
+                # CRÍTICO: Deshabilita cualquier publicación de TF por parte del driver.
+                "use_tf": False, # <--- ¡NUEVO Y CRÍTICO!
 
-            # Establece el frame_id que se usará en el header del mensaje /scan.
-            # Tu static_transform_publisher lo usará como frame hijo.
-            "scanner_frame": "cloud",
-            "frame_id": "cloud", 
-            
-            # --- Otros Parámetros ---
-            "publish_laserscan": True,
-            "use_published_timestamp": False
-        }]
+                # Deshabilita la transformación de la nube de puntos.
+                "cloud_transform": False, 
+
+                # Este NO es el frame que conecta con base_link, es el frame donde irán los datos del sensor.
+                "scanner_frame": "cloud", 
+                "frame_id": "cloud", 
+                
+                # Parámetro de seguridad, aunque 'use_tf: False' debería bastar.
+                "tf_frame_id": "", # <--- ¡NUEVO! Deja vacío o sin sentido.
+                
+                # --- Otros Parámetros ---
+                "publish_laserscan": True,
+                "use_published_timestamp": False
+            }]
     )
     
     ld.add_action(node)
