@@ -32,26 +32,31 @@ def generate_launch_description():
         remappings=[ ('/sick_nav_350/scan', '/scan'), ],
         arguments=node_arguments, # Se pasa el launch file interno
         parameters=[{
-            
-            # --- Parámetros de Odometría (Desactivados) ---
-            "use_odom": False,
-            "publish_odom_tf": False,
-            "publish_odom": False,
-            "output_odom_topic": "",
-            
-            # --- Parámetros Críticos de TF para Desactivación Forzada ---
-            # Estos anulan cualquier configuración de TF que pueda haber en el launch file interno.
-            "cloud_transform": False, # Desactiva la TF de la nube de puntos.
-            "use_tf": False,          # <--- MÁXIMA PRIORIDAD: Desactiva TODO manejo de TF.
-            
-            # Frame ID para el mensaje /scan (Debe ser 'cloud' para tu static_transform_publisher)
-            "scanner_frame": "cloud",
-            "frame_id": "cloud", 
+                
+                # ... (Parámetros de Odometría)
+                "use_odom": False,
+                "publish_odom_tf": False,
+                "publish_odom": False,
+                "output_odom_topic": "",
+                
+                # --- Parámetros Críticos de TF para Desactivación (NUEVO) ---
+                
+                # CRÍTICO: Sobreescribe el argumento tf_publish_rate del launch interno a 0.0 Hz.
+                # Esto desactiva la publicación de la TF map -> cloud.
+                "tf_publish_rate": 0.0, # <--- ¡CLAVE!
 
-            # Otros parámetros (mantener si es necesario)
-            "publish_laserscan": True,
-            "use_published_timestamp": False
-        }]
+                # Desactivación forzada (por si acaso el driver no respeta el tf_publish_rate=0.0)
+                "cloud_transform": False, 
+                "use_tf": False,          
+                
+                # Frame ID para el mensaje /scan (Debe ser 'cloud')
+                "scanner_frame": "cloud",
+                "frame_id": "cloud", 
+
+                # Otros parámetros (mantener si es necesario)
+                "publish_laserscan": True,
+                "use_published_timestamp": False
+            }]
     )
     
     ld.add_action(node)
