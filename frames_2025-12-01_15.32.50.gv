@@ -1,0 +1,16 @@
+digraph G {
+"map" -> "cloud"[label=" Broadcaster: default_authority\nAverage rate: 10.175\nBuffer length: 4.816\nMost recent transform: 1764621170.937331\nOldest transform: 1764621166.121747\n"];
+"cloud" -> "nav"[label=" Broadcaster: default_authority\nAverage rate: 8.245\nBuffer length: 4.851\nMost recent transform: 1764621171.037627\nOldest transform: 1764621166.186297\n"];
+"odom" -> "base_link"[label=" Broadcaster: default_authority\nAverage rate: 20.207\nBuffer length: 4.751\nMost recent transform: 1764621170.893034\nOldest transform: 1764621166.142177\n"];
+"base_link" -> "back_left_wheel_link"[label=" Broadcaster: default_authority\nAverage rate: 10.208\nBuffer length: 4.8\nMost recent transform: 1764621170.880649\nOldest transform: 1764621166.080432\n"];
+"base_link" -> "back_right_wheel_link"[label=" Broadcaster: default_authority\nAverage rate: 10.208\nBuffer length: 4.8\nMost recent transform: 1764621170.880649\nOldest transform: 1764621166.080432\n"];
+"base_link" -> "front_left_wheel_link"[label=" Broadcaster: default_authority\nAverage rate: 10.208\nBuffer length: 4.8\nMost recent transform: 1764621170.880649\nOldest transform: 1764621166.080432\n"];
+"base_link" -> "front_right_wheel_link"[label=" Broadcaster: default_authority\nAverage rate: 10.208\nBuffer length: 4.8\nMost recent transform: 1764621170.880649\nOldest transform: 1764621166.080432\n"];
+"base_link" -> "chasis_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"base_link" -> "imu_sensor_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+"base_link" -> "laser_sensor_link"[label=" Broadcaster: default_authority\nAverage rate: 10000.0\nBuffer length: 0.0\nMost recent transform: 0.0\nOldest transform: 0.0\n"];
+edge [style=invis];
+ subgraph cluster_legend { style=bold; color=black; label ="view_frames Result";
+"Recorded at time: 1764621170.9616215"[ shape=plaintext ] ;
+}->"odom";
+}

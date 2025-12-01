@@ -6,56 +6,52 @@ from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
 
 def generate_launch_description():
-
     ld = LaunchDescription()
-    sick_scan_pkg_prefix = get_package_share_directory('sick_scan_xd')
     
-    # Obtiene el nombre del archivo launch para pasarlo como argumento al caller
-    # Esto se resuelve a algo como 'sick_nav_350.launch'
-    launchfile = os.path.basename(__file__)[:-3] 
-    launch_file_path = os.path.join(sick_scan_pkg_prefix, 'launch/' + launchfile) 
-    node_arguments=[launch_file_path]
+    # ⚠️ Importante: Ya no se calcula 'node_arguments' con el launch file interno.
+    # Los argumentos se pasan vacíos o solo con aquellos que necesites añadir.
+    node_arguments = [] 
     
-    # Permite añadir argumentos adicionales desde la línea de comandos
+    # Se mantiene el código para agregar argumentos opcionales desde la línea de comandos
     for arg in sys.argv:
         if len(arg.split(":=")) == 2:
             node_arguments.append(arg)
+
+    # El ROS_DISTRO ya no es necesario si asumimos ROS 2 Humble
+    # Vamos directamente al bloque de configuración para Humble
     
-    # --- Parámetros específicos para ROS 2 Humble (Foxy y posteriores) ---
     node = Node(
         package='sick_scan_xd',
-        # 'executable' es lo correcto para ROS Foxy/Humble y posteriores
         executable='sick_generic_caller',
         output='log',
-        # Remapeo CRÍTICO: remapea el tópico por defecto del SICK al estándar /scan
+        # Remapeo CRÍTICO: Remapea el tópico por defecto del SICK al estándar /scan
         remappings=[ ('/sick_nav_350/scan', '/scan'), ],
         arguments=node_arguments,
         parameters=[{
-                # --- Parámetros de Odometría (Deshabilitados) ---
-                "use_odom": False,
-                "publish_odom_tf": False,
-                "publish_odom": False,
-                "output_odom_topic": "",
-                
-                # --- Parámetros Críticos de TF para Integración (ACTUALIZADO) ---
-                
-                # CRÍTICO: Deshabilita cualquier publicación de TF por parte del driver.
-                "use_tf": False, # <--- ¡NUEVO Y CRÍTICO!
+            
+            # --- Parámetros de Conexión (Asegúrate de que sean correctos para tu sensor) ---
+            "scanner_type": "sick_nav_350", # <--- ESENCIAL para que el caller sepa qué sensor es
+            "min_scanner_frequency": 10.0,
+            "max_scanner_frequency": 10.0,
+            # Añade aquí IP y puerto si no son por defecto:
+            # "hostname": "192.168.0.1", 
+            # "port": "2112", 
 
-                # Deshabilita la transformación de la nube de puntos.
-                "cloud_transform": False, 
+            # --- Parámetros Críticos de TF para Integración ---
+            # Deshabilita la publicación de TF del driver COMPLETAMENTE
+            "use_tf": False, 
+            "cloud_transform": False, 
+            "publish_odom_tf": False,
+            "publish_odom": False,
 
-                # Este NO es el frame que conecta con base_link, es el frame donde irán los datos del sensor.
-                "scanner_frame": "cloud", 
-                "frame_id": "cloud", 
-                
-                # Parámetro de seguridad, aunque 'use_tf: False' debería bastar.
-                "tf_frame_id": "", # <--- ¡NUEVO! Deja vacío o sin sentido.
-                
-                # --- Otros Parámetros ---
-                "publish_laserscan": True,
-                "use_published_timestamp": False
-            }]
+            # Frame ID para el header del mensaje /scan
+            "scanner_frame": "cloud",
+            "frame_id": "cloud", 
+            
+            # --- Otros Parámetros ---
+            "publish_laserscan": True,
+            "use_published_timestamp": False
+        }]
     )
     
     ld.add_action(node)
