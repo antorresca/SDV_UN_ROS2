@@ -137,7 +137,14 @@
         <xacro:m_joint name="back_left_wheel_joint" type="continuous" origin_xyz="-${x_wheel} ${y_wheel} ${z_wheel}" origin_rpy="0 ${pi_val/2} -${pi_val/2}" axis="0 0 -1" parent="${base_link}" child="back_left_wheel_link" />
     </xacro:macro>
 
-    <link name="${base_footprint_frame}"/>
+    <link name="${base_footprint_frame}">
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.001 0.001 0.001" />
+            </geometry>
+        </visual>
+    </link>
     
     <link name="base_link">
         <visual>
