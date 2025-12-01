@@ -7,6 +7,7 @@ amcl:
     base_frame_id: "base_link"
     odom_frame_id: "odom"
     global_frame_id: "map"
+    laser_frame_id: "cloud" 
     
     # ¡IMPORTANTE! Especificar tópicos explícitamente
     odom_topic: "odom"
