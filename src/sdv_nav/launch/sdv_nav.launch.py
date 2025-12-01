@@ -21,13 +21,13 @@ def generate_launch_description():
     )
 
     map_yaml_path = PathJoinSubstitution([
-        get_package_share_directory("sdv_nav"), 
+        get_package_share_directory("sdv_nav"),
         "maps",
         "LabFabEx.yaml"
     ])
 
     # =======================
-    # TF STATIC ─ base_link → cloud (LIDAR)
+    # TF STATIC: base_link → cloud (LIDAR)
     # =======================
     cloud_tf = Node(
         package='tf2_ros',
@@ -35,10 +35,10 @@ def generate_launch_description():
         name='static_tf_laser_base',
         output='screen',
         arguments=[
-            '0.25', '0.0', '0.0',   # x y z del LIDAR respecto a base_link
-            '0', '0', '0',          # roll pitch yaw
-            'base_link',            # parent frame
-            'cloud'                 # child frame (coincide con scanner_frame del SICK)
+            "0.25", "0.0", "0.0",   # x y z del LIDAR respecto a base_link
+            "0", "0", "0",          # roll pitch yaw
+            "base_link",            # parent frame
+            "cloud"                 # child frame (coincide con el scanner_frame del SICK)
         ]
     )
 
@@ -46,12 +46,12 @@ def generate_launch_description():
     # URDF / XACRO
     # =======================
     robot_description = {
-        'robot_description': Command([
-            'xacro ',
+        "robot_description": Command([
+            "xacro ",
             PathJoinSubstitution([
                 sdv_description_pkg,
-                'xacro',
-                'sdv_description.xacro'
+                "xacro",
+                "sdv_description.xacro"
             ])
         ])
     }
@@ -60,9 +60,9 @@ def generate_launch_description():
     # ROBOT STATE PUBLISHER
     # =======================
     robot_state_pub = Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        output='screen',
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        output="screen",
         parameters=[robot_description]
     )
 
@@ -70,10 +70,10 @@ def generate_launch_description():
     # JOINT STATE PUBLISHER
     # =======================
     joint_state_pub = Node(
-        package='joint_state_publisher',
-        executable='joint_state_publisher',
-        name='joint_state_publisher',
-        output='screen'
+        package="joint_state_publisher",
+        executable="joint_state_publisher",
+        name="joint_state_publisher",
+        output="screen"
     )
 
     # =======================
@@ -87,31 +87,31 @@ def generate_launch_description():
     # SERIAL NODE (publica odom → base_link)
     # =======================
     serial_node = Node(
-        package='sdv_serial',
-        executable='sdv_serial_node',
-        name='sdv_serial_node',
-        output='screen'
+        package="sdv_serial",
+        executable="sdv_serial_node",
+        name="sdv_serial_node",
+        output="screen"
     )
 
     # =======================
     # CONTROLLER NODE
     # =======================
     controller_node = Node(
-        package='sdv_controller',
-        executable='sdv_controller_node',
-        name='sdv_controller_node',
-        output='screen'
+        package="sdv_controller",
+        executable="sdv_controller_node",
+        name="sdv_controller_node",
+        output="screen"
     )
 
     # =======================
-    # MAP SERVER (solo para ver el mapa en RViz)
+    # MAP SERVER (solo para visualizar el mapa en RViz)
     # =======================
     map_server = Node(
-        package='nav2_map_server',
-        executable='map_server',
-        name='map_server',
-        output='screen',
-        parameters=[{'yaml_filename': map_yaml_path}]
+        package="nav2_map_server",
+        executable="map_server",
+        name="map_server",
+        output="screen",
+        parameters=[{"yaml_filename": map_yaml_path}]
     )
 
     # =======================
