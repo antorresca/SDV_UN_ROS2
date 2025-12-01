@@ -6,49 +6,49 @@ from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
 
 def generate_launch_description():
+
     ld = LaunchDescription()
+    sick_scan_pkg_prefix = get_package_share_directory('sick_scan_xd')
     
-    # ⚠️ Importante: Ya no se calcula 'node_arguments' con el launch file interno.
-    # Los argumentos se pasan vacíos o solo con aquellos que necesites añadir.
-    node_arguments = [] 
+    # --- 1. Calcular el camino al launch file interno (Necesario para la configuración del sensor) ---
+    # Esto se resuelve a algo como 'launch/sick_nav_350.launch'
+    launchfile = os.path.basename(__file__)[:-3] 
+    launch_file_path = os.path.join(sick_scan_pkg_prefix, 'launch/' + launchfile) 
     
-    # Se mantiene el código para agregar argumentos opcionales desde la línea de comandos
+    # --- 2. Crear argumentos, incluyendo el launch file interno ---
+    node_arguments=[launch_file_path] 
+    
+    # Añadir argumentos opcionales
     for arg in sys.argv:
         if len(arg.split(":=")) == 2:
             node_arguments.append(arg)
-
-    # El ROS_DISTRO ya no es necesario si asumimos ROS 2 Humble
-    # Vamos directamente al bloque de configuración para Humble
     
+    # --- 3. Definición del Nodo (Bloque de Humble) ---
+    # Asumimos Humble (ROS_DISTRO > "e")
     node = Node(
         package='sick_scan_xd',
         executable='sick_generic_caller',
         output='log',
-        # Remapeo CRÍTICO: Remapea el tópico por defecto del SICK al estándar /scan
         remappings=[ ('/sick_nav_350/scan', '/scan'), ],
-        arguments=node_arguments,
+        arguments=node_arguments, # Se pasa el launch file interno
         parameters=[{
             
-            # --- Parámetros de Conexión (Asegúrate de que sean correctos para tu sensor) ---
-            "scanner_type": "sick_nav_350", # <--- ESENCIAL para que el caller sepa qué sensor es
-            "min_scanner_frequency": 10.0,
-            "max_scanner_frequency": 10.0,
-            # Añade aquí IP y puerto si no son por defecto:
-            # "hostname": "192.168.0.1", 
-            # "port": "2112", 
-
-            # --- Parámetros Críticos de TF para Integración ---
-            # Deshabilita la publicación de TF del driver COMPLETAMENTE
-            "use_tf": False, 
-            "cloud_transform": False, 
+            # --- Parámetros de Odometría (Desactivados) ---
+            "use_odom": False,
             "publish_odom_tf": False,
             "publish_odom": False,
-
-            # Frame ID para el header del mensaje /scan
+            "output_odom_topic": "",
+            
+            # --- Parámetros Críticos de TF para Desactivación Forzada ---
+            # Estos anulan cualquier configuración de TF que pueda haber en el launch file interno.
+            "cloud_transform": False, # Desactiva la TF de la nube de puntos.
+            "use_tf": False,          # <--- MÁXIMA PRIORIDAD: Desactiva TODO manejo de TF.
+            
+            # Frame ID para el mensaje /scan (Debe ser 'cloud' para tu static_transform_publisher)
             "scanner_frame": "cloud",
             "frame_id": "cloud", 
-            
-            # --- Otros Parámetros ---
+
+            # Otros parámetros (mantener si es necesario)
             "publish_laserscan": True,
             "use_published_timestamp": False
         }]
