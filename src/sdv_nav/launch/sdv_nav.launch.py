@@ -1,67 +1,104 @@
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
-from launch_ros.actions import Node
+from launch_ros.actions import Node, LifecycleNode
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, PathJoinSubstitution, LaunchConfiguration
 from ament_index_python.packages import get_package_share_directory
 import os
 
-
 def generate_launch_description():
-
-    # =======================
-    # DECLARACIÓN DE ARGUMENTOS (para AMCL)
-    # =======================
-    # Define la ruta al archivo de parámetros de AMCL (debes crearlo en sdv_nav/config)
-    amcl_params_file = PathJoinSubstitution([
-        get_package_share_directory("sdv_nav"),
-        "config",
-        "amcl_params.yaml" # <-- DEBES CREAR ESTE ARCHIVO
-    ])
     
-    # Argumento para usar el tiempo de simulación (útil si usas Gazebo o similar)
-    use_sim_time = DeclareLaunchArgument(
-        'use_sim_time', default_value='false',
-        description='Use simulation (Gazebo) clock if true')
-
     # =======================
-    # PATHS
+    # DECLARACIÓN DE ARGUMENTOS
     # =======================
+    use_sim_time_arg = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='false',
+        description='Use simulation (Gazebo) clock if true'
+    )
+    
+    map_yaml_arg = DeclareLaunchArgument(
+        'map',
+        default_value=PathJoinSubstitution([
+            get_package_share_directory("sdv_nav"),
+            "maps",
+            "LabFabEx.yaml"
+        ]),
+        description='Full path to map yaml file to load'
+    )
+    
+    params_file_arg = DeclareLaunchArgument(
+        'params_file',
+        default_value=PathJoinSubstitution([
+            get_package_share_directory("sdv_nav"),
+            "config",
+            "nav2_params.yaml"  # Archivo de parámetros único para Nav2
+        ]),
+        description='Full path to the ROS2 parameters file to use'
+    )
+    
+    # =======================
+    # VARIABLES Y PATHS
+    # =======================
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    map_yaml_path = LaunchConfiguration('map')
+    params_file = LaunchConfiguration('params_file')
+    
     sdv_description_pkg = get_package_share_directory('sdv_sim')
-
     sick_launch = os.path.join(
         get_package_share_directory('sick_scan_xd'),
         'launch',
         'sick_nav_350.launch.py'
     )
-
-    map_yaml_path = PathJoinSubstitution([
-        get_package_share_directory("sdv_nav"),
-        "maps",
-        "LabFabEx.yaml"
-    ])
     
     # =======================
-    # AMCL (Adaptive Monte Carlo Localization)
+    # NAV2 LIFECYCLE MANAGER
     # =======================
-    # Este nodo publica la transformación map -> odom para cerrar el ciclo TF
-    amcl_node = Node(
+    # ¡ESTO ES CRÍTICO! Controla el ciclo de vida de todos los nodos de Nav2
+    lifecycle_manager = Node(
+        package='nav2_lifecycle_manager',
+        executable='lifecycle_manager',
+        name='lifecycle_manager_localization',
+        output='screen',
+        parameters=[
+            {'use_sim_time': use_sim_time},
+            {'autostart': True},
+            {'node_names': [
+                'map_server',
+                'amcl'
+            ]}
+        ]
+    )
+    
+    # =======================
+    # MAP SERVER (como LifecycleNode)
+    # =======================
+    map_server = LifecycleNode(
+        package='nav2_map_server',
+        executable='map_server',
+        name='map_server',
+        output='screen',
+        parameters=[
+            {'use_sim_time': use_sim_time},
+            {'yaml_filename': map_yaml_path}
+        ]
+    )
+    
+    # =======================
+    # AMCL (como LifecycleNode)
+    # =======================
+    amcl = LifecycleNode(
         package='nav2_amcl',
         executable='amcl',
         name='amcl',
         output='screen',
-        parameters=[
-            {"use_sim_time": True},
-            amcl_params_file  # Carga los parámetros del nodo AMCL
-        ],
+        parameters=[params_file],  # Carga TODOS los parámetros de Nav2
         remappings=[
-            ('scan', '/scan'),  # Asegura que AMCL escuche el tópico /scan del LIDAR
-            # Agrega otros remapeos si tu odometría no está en /odom
-            # ('odom', '/tu_topico_odom'), 
+            ('scan', '/scan'),
+            ('odom', '/odom'),  # ¡IMPORTANTE! Asegura que AMCL escuche /odom
         ]
     )
-
-
+    
     # =======================
     # TF STATIC: base_link → cloud (LIDAR)
     # =======================
@@ -77,9 +114,10 @@ def generate_launch_description():
             "cloud"                 # child frame (coincide con el scanner_frame del SICK)
         ]
     )
-
-    # ... (URDF / XACRO, ROBOT STATE PUBLISHER, JOINT STATE PUBLISHER: SIN CAMBIOS) ...
-
+    
+    # =======================
+    # ROBOT DESCRIPTION
+    # =======================
     robot_description = {
         "robot_description": Command([
             "xacro ",
@@ -90,28 +128,21 @@ def generate_launch_description():
             ])
         ])
     }
-
+    
     robot_state_pub = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="screen",
-        parameters=[robot_description]
+        parameters=[robot_description, {'use_sim_time': use_sim_time}]
     )
-
-    joint_state_pub = Node(
-        package="joint_state_publisher",
-        executable="joint_state_publisher",
-        name="joint_state_publisher",
-        output="screen"
-    )
-
+    
     # =======================
     # SICK LIDAR (Driver)
     # =======================
     sick_node = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(sick_launch)
     )
-
+    
     # =======================
     # SERIAL NODE (publica odom → base_link)
     # =======================
@@ -121,7 +152,7 @@ def generate_launch_description():
         name="sdv_serial_node",
         output="screen"
     )
-
+    
     # =======================
     # CONTROLLER NODE
     # =======================
@@ -131,32 +162,18 @@ def generate_launch_description():
         name="sdv_controller_node",
         output="screen"
     )
-
+    
     # =======================
-    # MAP SERVER (Mantiene el Mapa en Memoria)
-    # =======================
-    map_server = Node(
-        package="nav2_map_server",
-        executable="map_server",
-        name="map_server",
-        output="screen",
-        parameters=[
-            {"yaml_filename": map_yaml_path},
-            # Es importante que el map_server NO publique la TF. AMCL lo hará.
-            {"frame_id": "map"} 
-        ]
-    )
-
-    # =======================
-    # RETURN
+    # ARGUMENTOS Y NODOS
     # =======================
     return LaunchDescription([
         # Argumentos
-        use_sim_time,
+        use_sim_time_arg,
+        map_yaml_arg,
+        params_file_arg,
         
         # Base Robot
         robot_state_pub,
-        joint_state_pub,
         cloud_tf,
         
         # Drivers y Control
@@ -164,7 +181,8 @@ def generate_launch_description():
         serial_node,
         controller_node,
         
-        # Localización y Mapa
+        # Nav2 Localization Stack (con Lifecycle Manager)
         map_server,
-        amcl_node, # <-- ¡NUEVO!
+        amcl,
+        lifecycle_manager,
     ])
