@@ -122,6 +122,12 @@ def generate_launch_description():
         output="screen",
         parameters=[robot_description, {'use_sim_time': use_sim_time}]
     )
+    joint_state_pub = Node(
+        package="joint_state_publisher",
+        executable="joint_state_publisher",
+        name="joint_state_publisher",
+        output="screen"
+    )
     
     # =======================
     # SICK LIDAR
@@ -221,13 +227,14 @@ def generate_launch_description():
         
         # Robot State Publisher
         robot_state_pub,
+        joint_state_pub,
         
         # Drivers y Control
         sick_node,
         serial_node,
         controller_node,
         planner_node,
-            
+
         # Nav2 Localization
         map_server,
         amcl,
