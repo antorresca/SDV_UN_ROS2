@@ -149,6 +149,17 @@ def generate_launch_description():
         name="sdv_controller_node",
         output="screen"
     )
+
+    # =======================
+    # PLANNER NODE
+    # =======================
+    planner_node = Node(
+        package="sdv_planner",
+        executable="a_star_planner",
+        name="sdv_planner_node",
+        output="screen"
+    )
+
     
     # =======================
     # LIFECYCLE COMMANDS
@@ -215,6 +226,7 @@ def generate_launch_description():
         sick_node,
         serial_node,
         controller_node,
+        planner_node,
         
         # Nav2 Localization
         map_server,

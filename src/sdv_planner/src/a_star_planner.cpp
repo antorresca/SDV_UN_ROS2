@@ -49,7 +49,7 @@ void AStarPlanner::goalCallback(const geometry_msgs::msg::PoseStamped::SharedPtr
     geometry_msgs::msg::TransformStamped map_to_base_tf;
     try {
         map_to_base_tf = tf_buffer_->lookupTransform(
-            map_->header.frame_id, "base_footprint", tf2::TimePointZero);
+            map_->header.frame_id, "base_link", tf2::TimePointZero);
     } catch (const tf2::TransformException & ex) {
         RCLCPP_ERROR(get_logger(), "Could not transform from map to base_footprint");
         return;
