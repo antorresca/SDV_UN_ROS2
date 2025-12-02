@@ -227,7 +227,7 @@ def generate_launch_description():
         serial_node,
         controller_node,
         planner_node,
-        
+            
         # Nav2 Localization
         map_server,
         amcl,
