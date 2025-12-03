@@ -1,42 +1,37 @@
 controller_server:
   ros__parameters:
     use_sim_time: false
-    controller_frequency: 10.0
+    controller_frequency: 20.0
 
     FollowPath:
       plugin: "dwb_core::DWBLocalPlanner"
 
-    # ============================
-    # DWB Local Planner parameters
-    # ============================
-    base_frame_id: "base_link"
-    global_frame_id: "map"
-    odom_frame_id: "odom"
+      critics:
+        - RotateToGoal
+        - Oscillation
+        - ObstacleFootprint
+        - GoalAlign
+        - PathAlign
+        - PathDist
+        - GoalDist
 
-    min_vel_x: 0.0
-    max_vel_x: 0.5           # tu robot puede limitar más abajo en el nodo SDV
-    min_vel_theta: -1.0
-    max_vel_theta: 1.0
+      # Below are typical params
+      base_frame_id: base_link
+      global_frame_id: map
+      odom_frame_id: odom
 
-    acc_lim_x: 1.0
-    acc_lim_theta: 2.0
+      min_vel_x: 0.0
+      max_vel_x: 0.5
+      min_vel_theta: -1.0
+      max_vel_theta: 1.0
 
-    vx_samples: 10
-    vy_samples: 0
-    vtheta_samples: 20
+      vx_samples: 10
+      vtheta_samples: 20
 
-    # ===== Critic plugins =====
-    critics:
-      - RotateToGoal
-      - Oscillation
-      - ObstacleFootprint
-      - GoalAlign
-      - PathAlign
-      - PathDist
-      - GoalDist
+      acc_lim_x: 1.0
+      acc_lim_theta: 2.0
 
-    # Obstáculos
-    obstacle_radius: 0.22
-    footprint_model:
-      type: "circle"
-      radius: 0.22
+      obstacle_radius: 0.22
+      footprint_model:
+        type: "circle"
+        radius: 0.22
