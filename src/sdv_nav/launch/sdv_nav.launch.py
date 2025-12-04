@@ -117,7 +117,8 @@ def generate_launch_description():
     # DRIVERS
     # ===========================
     sick_node = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(sick_launch)
+        PythonLaunchDescriptionSource(sick_launch),
+        output="screen"
     )
 
     serial_node = Node(
