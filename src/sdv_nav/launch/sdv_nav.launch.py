@@ -223,13 +223,13 @@ def generate_launch_description():
     
                 # ❗ Critic plugins (OBLIGATORIOS)
                 'critics': [
-                    'ObstacleFootprint',
-                    'Oscillation',
-                    'BaseObstacle',
-                    'PathAlign',
-                    'GoalAlign',
-                    'PathDist',
-                    'GoalDist'
+                    #'ObstacleFootprint',
+                    #'Oscillation',
+                    #'BaseObstacle',
+                    'PathAlign'
+                    #'GoalAlign',
+                    #'PathDist',
+                    #'GoalDist'
                 ]
             }
         }],
