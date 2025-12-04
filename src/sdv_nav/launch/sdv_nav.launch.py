@@ -410,7 +410,7 @@ def generate_launch_description():
         sick_node,
         serial_node,
         controller_node,
-        planner_node,
+        planner_server,
         controller_server,
         # Nav2 Localization
         map_server,
