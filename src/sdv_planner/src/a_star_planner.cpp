@@ -1,46 +1,25 @@
-// a_star_planner_action.cpp
 #include <queue>
 #include <vector>
-#include <memory>
-#include <algorithm>
 
 #include "sdv_planner/a_star_planner.hpp"
-
-#include "rclcpp/rclcpp.hpp"
-#include "rclcpp_action/rclcpp_action.hpp"
-#include "tf2_ros/transform_listener.h"
-#include "tf2_ros/buffer.h"
-
-#include "nav_msgs/msg/occupancy_grid.hpp"
-#include "nav_msgs/msg/path.hpp"
-#include "geometry_msgs/msg/pose_stamped.hpp"
-#include "geometry_msgs/msg/pose.hpp"
-
-#include "nav2_msgs/action/follow_path.hpp"  // action
 #include "rmw/qos_profiles.h"
+
 
 namespace sdv_planner
 {
-
-using FollowPath = nav2_msgs::action::FollowPath;
-using GoalHandleFollowPath = rclcpp_action::ClientGoalHandle<FollowPath>;
-
 AStarPlanner::AStarPlanner() : Node("a_star_node")
 {
     tf_buffer_ = std::make_unique<tf2_ros::Buffer>(get_clock());
     tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
 
-    // Map subscription with TRANSIENT_LOCAL durability
     rclcpp::QoS map_qos(10);
     map_qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
     map_sub_ = create_subscription<nav_msgs::msg::OccupancyGrid>(
         "/map", map_qos, std::bind(&AStarPlanner::mapCallback, this, std::placeholders::_1));
 
-    // Goal pose subscription
     pose_sub_ = create_subscription<geometry_msgs::msg::PoseStamped>(
         "/goal_pose", 10, std::bind(&AStarPlanner::goalCallback, this, std::placeholders::_1));
-
-    // Publisher for visualization (RViz)
+    
     rclcpp::QoS qos = rclcpp::QoS(rclcpp::KeepLast(1));
     qos.reliable();
     qos.durability_volatile();
@@ -51,24 +30,6 @@ AStarPlanner::AStarPlanner() : Node("a_star_node")
     map_pub_ = create_publisher<nav_msgs::msg::OccupancyGrid>(
         "/a_star/visited_map", 10
     );
-
-    // --- Action client for /follow_path ---
-    action_client_ = rclcpp_action::create_client<FollowPath>(this, "/follow_path");
-
-    // Wait (async) for the action server to be available in background
-    // Optionally we can block a short while; here we spin a thread that waits so node starts quickly.
-    std::thread([this]() {
-        if (!this->action_client_->wait_for_action_server(std::chrono::seconds(5))) {
-            RCLCPP_WARN(this->get_logger(), "FollowPath action server not available after 5s. Will keep trying.");
-            // keep trying until available
-            while (rclcpp::ok() && !this->action_client_->wait_for_action_server(std::chrono::seconds(2))) {
-                RCLCPP_INFO(this->get_logger(), "Waiting for /follow_path action server...");
-            }
-        }
-        if (rclcpp::ok()) {
-            RCLCPP_INFO(this->get_logger(), "/follow_path action server available.");
-        }
-    }).detach();
 }
 
 void AStarPlanner::mapCallback(const nav_msgs::msg::OccupancyGrid::SharedPtr map)
@@ -93,7 +54,7 @@ void AStarPlanner::goalCallback(const geometry_msgs::msg::PoseStamped::SharedPtr
         map_to_base_tf = tf_buffer_->lookupTransform(
             map_->header.frame_id, "base_link", tf2::TimePointZero);
     } catch (const tf2::TransformException & ex) {
-        RCLCPP_ERROR(get_logger(), "Could not transform from map to base_link: %s", ex.what());
+        RCLCPP_ERROR(get_logger(), "Could not transform from map to base_footprint");
         return;
     }
 
@@ -105,71 +66,10 @@ void AStarPlanner::goalCallback(const geometry_msgs::msg::PoseStamped::SharedPtr
     auto path = plan(map_to_base_pose, pose->pose);
     if (!path.poses.empty()) {
         RCLCPP_INFO(this->get_logger(), "Shortest path found!");
-        // 1) publish for RViz / debugging
         path_pub_->publish(path);
-
-        // 2) send as action goal to the controller (/follow_path)
-        send_path_as_action(path);
     } else {
         RCLCPP_WARN(this->get_logger(), "No path found to the goal.");
     }
-}
-
-void AStarPlanner::send_path_as_action(const nav_msgs::msg::Path & path)
-{
-    if (!action_client_) {
-        RCLCPP_ERROR(this->get_logger(), "Action client not initialized.");
-        return;
-    }
-
-    if (!action_client_->wait_for_action_server(std::chrono::seconds(2))) {
-        RCLCPP_ERROR(this->get_logger(), "FollowPath action server not available - cannot send goal.");
-        return;
-    }
-
-    // Prepare goal
-    auto goal_msg = FollowPath::Goal();
-    goal_msg.path = path;
-
-    RCLCPP_INFO(this->get_logger(), "Sending FollowPath goal to /follow_path");
-
-    // send goal asynchronously
-    auto send_goal_options = rclcpp_action::Client<FollowPath>::SendGoalOptions();
-    send_goal_options.goal_response_callback =
-        [this](std::shared_future<GoalHandleFollowPath::SharedPtr> future) {
-            auto goal_handle = future.get();
-            if (!goal_handle) {
-                RCLCPP_WARN(this->get_logger(), "Goal was rejected by server.");
-            } else {
-                RCLCPP_INFO(this->get_logger(), "Goal accepted by server, waiting for result...");
-            }
-        };
-
-    send_goal_options.feedback_callback =
-        [this](GoalHandleFollowPath::SharedPtr, const std::shared_ptr<const FollowPath::Feedback> feedback) {
-            // optional: handle feedback if controller provides any (most controllers provide little/no feedback)
-            (void)feedback;
-        };
-
-    send_goal_options.result_callback =
-        [this](const GoalHandleFollowPath::WrappedResult & result) {
-            switch (result.code) {
-                case rclcpp_action::ResultCode::SUCCEEDED:
-                    RCLCPP_INFO(this->get_logger(), "FollowPath result: SUCCEEDED");
-                    break;
-                case rclcpp_action::ResultCode::ABORTED:
-                    RCLCPP_WARN(this->get_logger(), "FollowPath result: ABORTED");
-                    break;
-                case rclcpp_action::ResultCode::CANCELED:
-                    RCLCPP_INFO(this->get_logger(), "FollowPath result: CANCELED");
-                    break;
-                default:
-                    RCLCPP_WARN(this->get_logger(), "FollowPath result: UNKNOWN");
-                    break;
-            }
-        };
-
-    action_client_->async_send_goal(goal_msg, send_goal_options);
 }
 
 nav_msgs::msg::Path AStarPlanner::plan(const geometry_msgs::msg::Pose & start, const geometry_msgs::msg::Pose & goal)
@@ -189,14 +89,12 @@ nav_msgs::msg::Path AStarPlanner::plan(const geometry_msgs::msg::Pose & start, c
     pending_nodes.push(start_node);
 
     GraphNode active_node;
-    bool goal_reached = false;
     while (!pending_nodes.empty() && rclcpp::ok()) {
         active_node = pending_nodes.top();
         pending_nodes.pop();
 
         // Goal found!
         if (active_node == goal_node) {
-            goal_reached = true;
             break;
         }
 
@@ -206,11 +104,11 @@ nav_msgs::msg::Path AStarPlanner::plan(const geometry_msgs::msg::Pose & start, c
 
             if (std::find(visited_nodes.begin(), visited_nodes.end(), new_node) == visited_nodes.end() &&
                 poseOnMap(new_node) && map_->data.at(poseToCell(new_node)) == 0) {
-
+                
                 new_node.cost = active_node.cost + 1;
                 new_node.heuristic = manhattanDistance(new_node, goal_node);
                 new_node.prev = std::make_shared<GraphNode>(active_node);
-
+                
                 pending_nodes.push(new_node);
                 visited_nodes.push_back(new_node);
             }
@@ -223,23 +121,21 @@ nav_msgs::msg::Path AStarPlanner::plan(const geometry_msgs::msg::Pose & start, c
     // Reconstruct path if goal was reached
     nav_msgs::msg::Path path;
     path.header.frame_id = map_->header.frame_id;
-    if (goal_reached) {
-        while (active_node.prev && rclcpp::ok()) {
-            geometry_msgs::msg::Pose last_pose = gridToWorld(active_node);
-            geometry_msgs::msg::PoseStamped last_pose_stamped;
-            last_pose_stamped.header.frame_id = map_->header.frame_id;
-            last_pose_stamped.pose = last_pose;
-            path.poses.push_back(last_pose_stamped);
-            active_node = *active_node.prev;
-        }
-        std::reverse(path.poses.begin(), path.poses.end());
+    while (active_node.prev && rclcpp::ok()) {
+        geometry_msgs::msg::Pose last_pose = gridToWorld(active_node);
+        geometry_msgs::msg::PoseStamped last_pose_stamped;
+        last_pose_stamped.header.frame_id = map_->header.frame_id;
+        last_pose_stamped.pose = last_pose;
+        path.poses.push_back(last_pose_stamped);
+        active_node = *active_node.prev;
     }
+    std::reverse(path.poses.begin(), path.poses.end());
     return path;
 }
 
 double AStarPlanner::manhattanDistance(const GraphNode &node, const GraphNode &goal_node)
 {
-    return std::abs(node.x - goal_node.x) + std::abs(node.y - goal_node.y);
+    return abs(node.x - goal_node.x) + abs(node.y - goal_node.y);
 }
 
 bool AStarPlanner::poseOnMap(const GraphNode & node)
@@ -267,8 +163,7 @@ unsigned int AStarPlanner::poseToCell(const GraphNode & node)
 {
     return map_->info.width * node.y + node.x;
 }
-
-}  // namespace sdv_planner
+}  // namespace bumperbot_planning
 
 
 int main(int argc, char **argv)

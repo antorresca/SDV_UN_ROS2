@@ -183,15 +183,31 @@ def generate_launch_description():
         name="sdv_controller_node",
         output="screen"
     )
-    # =======================
-    # PLANNER NODE
-    # =======================
-    planner_node = Node(
-        package="sdv_planner",
-        executable="a_star_planner",
-        name="sdv_planner_node",
-        output="screen"
+
+    # ============================================================
+    # === PLANNER NAV2 (OFICIAL)
+    # ============================================================
+    planner_server = Node(
+        package='nav2_planner',
+        executable='planner_server',
+        name='planner_server',
+        output='screen',
+        parameters=[{
+            'expected_planner_frequency': 5.0,
+            'use_sim_time': False,
+            'planner_plugins': ['GridBased'],
+            'GridBased': {
+                'plugin': 'nav2_navfn_planner/NavfnPlanner',
+                'tolerance': 0.5,
+                'use_astar': False,
+                'allow_unknown': True
+            }
+        }],
+        remappings=[
+            ('odom', '/odom')
+        ]
     )
+
     # =======================
     # CONTROL NODE
     # =======================
@@ -341,6 +357,21 @@ def generate_launch_description():
         TimerAction(
             period=13.0,
             actions=[
+            ExecuteProcess(
+                cmd=['ros2', 'lifecycle', 'set', '/planner_server', 'configure'])
+        ]),
+        TimerAction(
+            period=14.0,
+            actions=[
+            ExecuteProcess(
+                cmd=['ros2', 'lifecycle', 'set', '/planner_server', 'activate'])
+        ]),
+        # =======================
+        # CONTROLLER SERVER (RPP)
+        # =======================
+        TimerAction(
+            period=15.0,
+            actions=[
                 ExecuteProcess(
                     cmd=['ros2', 'lifecycle', 'set', '/controller_server', 'configure'],
                     output='screen'
@@ -348,7 +379,7 @@ def generate_launch_description():
             ]
         ),
         TimerAction(
-            period=14.0,
+            period=16.0,
             actions=[
                 ExecuteProcess(
                     cmd=['ros2', 'lifecycle', 'set', '/controller_server', 'activate'],
