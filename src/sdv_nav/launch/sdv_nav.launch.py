@@ -188,14 +188,16 @@ def generate_launch_description():
             # Frecuencia del controlador
             'controller_frequency': 20.0,
             
-            # 1. Definición y configuración del Goal Checker (NUEVO)
-            # Esto corrige el WARN y evita posibles crashes al finalizar el goal.
+            # 1. Definición y configuración del Goal Checker
             'goal_checker_plugins': ['general_goal_checker'],
             'general_goal_checker': {
                 'plugin': 'nav2_controller::SimpleGoalChecker',
                 'xy_goal_tolerance': 0.25,
                 'yaw_goal_tolerance': 0.25,
             },
+            
+            # 2. FIX: Parámetros del Goal Checker por defecto (elimina el WARN)
+            'current_goal_checker': 'general_goal_checker',
 
             # Lista de plugins
             'controller_plugins': ['FollowPath'],
@@ -203,6 +205,10 @@ def generate_launch_description():
             # Parámetros generales del controlador
             'odom_topic': '/odom',
             'base_frame_id': 'base_link',
+            
+            # 3. FIX: Umbrales de velocidad (CRÍTICO para DWB/evitar SegFault)
+            'min_x_velocity_threshold': 0.001,
+            'min_theta_velocity_threshold': 0.001,
             
             # Plugin DWB como FollowPath
             'FollowPath': {
@@ -228,9 +234,12 @@ def generate_launch_description():
                     'radius': 0.22
                 },
                 
-                # ❗ Critic plugins (Mantenemos PathAlign)
+                # ❗ Critic plugins (Restauramos críticos geométricos para estabilidad)
                 'critics': [
-                    'PathAlign'
+                    'PathAlign',
+                    'GoalAlign',
+                    'PathDist',
+                    'GoalDist'
                 ]
             }
         }],

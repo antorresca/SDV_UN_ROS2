@@ -7,6 +7,9 @@ from nav_msgs.msg import Path
 import time
 import sys
 
+# Status 5 es el código para 'SUCCEEDED' en action_msgs/msg/GoalStatus
+GOAL_STATE_SUCCEEDED = 5
+
 class SDVTranslate(Node):
     def __init__(self):
         super().__init__('sdv_translate')
@@ -18,7 +21,7 @@ class SDVTranslate(Node):
         self.planner_client = ActionClient(
             self,
             ComputePathToPose,
-            '/compute_path_to_pose' # Usamos el nombre completo del Action Server
+            '/compute_path_to_pose'
         )
 
         # 2. Cliente para el Controller Server (FollowPath)
@@ -28,15 +31,9 @@ class SDVTranslate(Node):
             '/follow_path'
         )
         
-        # Eliminamos path_pub ya que el path se enviará directamente por la acción
-        # self.path_pub = self.create_publisher(Path, '/path', 10) 
-
     def goal_callback(self, pose):
         self.get_logger().info("Received goal from /goal_pose. Starting planning process...")
 
-        # ==============================================================
-        # 1. VERIFICACIÓN DE SERVER CON TIMEOUT (Para el Planner)
-        # ==============================================================
         self.get_logger().info("Waiting for planner server to become available...")
         
         # Esperamos un máximo de 5 segundos
@@ -46,14 +43,9 @@ class SDVTranslate(Node):
 
         self.get_logger().info("Planner Server is available. Sending goal...")
 
-        # ==============================================================
-        # 2. ENVÍO DEL GOAL AL PLANNER
-        # ==============================================================
         goal_msg = ComputePathToPose.Goal()
         goal_msg.goal = pose
         
-        # Si no se especifica el 'start', el planificador usa la posición actual del robot.
-        # Es buena práctica definir al menos el frame_id.
         goal_msg.start = PoseStamped()
         goal_msg.start.header.frame_id = 'map' 
 
@@ -69,19 +61,21 @@ class SDVTranslate(Node):
 
         self.get_logger().info("Planner accepted the goal. Waiting for path result...")
         
-        # Espera el resultado del Planner
         get_result_future = goal_handle.get_result_async()
         get_result_future.add_done_callback(self.follow_path_request)
 
 
     # ==============================================================
-    # 3. ENCUESTRA LA RUTA RECIBIDA Y LLAMA AL CONTROLLER
+    # CORRECCIÓN: Verifica el estado de éxito (5) del PLANNER
     # ==============================================================
     def follow_path_request(self, future):
         
+        # Verificamos que el estado final de la acción es SUCCEEDED (código 5)
         result_status = future.result().status
-        if result_status != 1: # Status 1 es 'GOAL_STATE_SUCCEEDED'
-            self.get_logger().error(f"Planning failed! Planner Status: {result_status}")
+        
+        if result_status != GOAL_STATE_SUCCEEDED:
+            # Aquí capturaste el Status 4 (ABORTED/FAILED)
+            self.get_logger().error(f"Planning failed! Planner Status: {result_status} (ABORTED/FAILED). Check planner_server logs!")
             return
             
         result = future.result().result
@@ -93,18 +87,17 @@ class SDVTranslate(Node):
 
         self.get_logger().info(f"Planner returned a path with {len(path.poses)} points. Sending to Controller...")
 
-        # ==============================================================
-        # 4. ENVÍO DEL GOAL AL CONTROLLER
-        # ==============================================================
         
-        # Esperamos el Controller Server (con timeout, por si acaso)
+        # ==============================================================
+        # ENVÍO DEL GOAL AL CONTROLLER (Sigue igual)
+        # ==============================================================
         if not self.controller_client.wait_for_server(timeout_sec=5.0):
             self.get_logger().error("Controller Server NOT available after 5s. Aborting navigation.")
             return
 
         controller_goal = FollowPath.Goal()
-        controller_goal.path = path  # Envía la ruta directamente
-        controller_goal.controller_id = 'FollowPath' # Debe coincidir con la configuración del launch
+        controller_goal.path = path
+        controller_goal.controller_id = 'FollowPath'
 
         send_goal_future = self.controller_client.send_goal_async(controller_goal)
         send_goal_future.add_done_callback(self.controller_finished)
@@ -119,15 +112,14 @@ class SDVTranslate(Node):
 
         self.get_logger().info("Controller accepted the path. Waiting for navigation result...")
         
-        # Espera el resultado final del Controller
         get_result_future = goal_handle.get_result_async()
         get_result_future.add_done_callback(self.navigation_finished)
 
 
     def navigation_finished(self, future):
+        # Status 3 es 'GOAL_STATE_SUCCEEDED' en el resultado de FollowPath
         final_status = future.result().status
-        # Status 3 es 'GOAL_STATE_SUCCEEDED'
-        if final_status == 3:
+        if final_status == GOAL_STATE_SUCCEEDED:
             self.get_logger().info('✅ Navigation Finished: SUCCEEDED!')
         else:
             self.get_logger().warn(f'❌ Navigation Finished with non-success status: {final_status}')
