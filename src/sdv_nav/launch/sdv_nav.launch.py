@@ -165,23 +165,51 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'use_sim_time': use_sim_time,
+    
+            # Frecuencia del controlador
             'controller_frequency': 20.0,
+    
+            # Lista de plugins
             'controller_plugins': ['FollowPath'],
+    
+            # Parámetros generales del controlador
+            'odom_topic': '/odom',
+            'base_frame_id': 'base_link',
+    
+            # Plugin DWB como FollowPath
             'FollowPath': {
                 'plugin': 'dwb_core::DWBLocalPlanner',
-                'base_frame_id': 'base_link',
-                'global_frame_id': 'map',
-                'odom_frame_id': 'odom',
+    
+                # Velocidades
                 'min_vel_x': 0.0,
                 'max_vel_x': 0.5,
                 'min_vel_theta': -1.0,
                 'max_vel_theta': 1.0,
+    
+                # Muestras
                 'vx_samples': 10,
                 'vtheta_samples': 20,
+    
+                # Aceleraciones
                 'acc_lim_x': 1.0,
                 'acc_lim_theta': 2.0,
-                'obstacle_radius': 0.22,
-                'footprint_model': {'type': 'circle', 'radius': 0.22}
+    
+                # Huella
+                'footprint_model': {
+                    'type': 'circle',
+                    'radius': 0.22
+                },
+    
+                # ❗ Critic plugins (OBLIGATORIOS)
+                'critics': [
+                    'ObstacleFootprint',
+                    'Oscillation',
+                    'BaseObstacle',
+                    'PathAlign',
+                    'GoalAlign',
+                    'PathDist',
+                    'GoalDist'
+                ]
             }
         }],
         remappings=[
@@ -189,6 +217,7 @@ def generate_launch_description():
             ('odom', '/odom')
         ]
     )
+
 
     # ===========================
     # NUEVO NODO: traslate (sdv_pruebas)
