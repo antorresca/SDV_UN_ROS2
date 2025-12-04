@@ -1,5 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, ExecuteProcess, TimerAction
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
 from launch_ros.actions import Node
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import Command, PathJoinSubstitution, LaunchConfiguration
@@ -51,42 +51,6 @@ def generate_launch_description():
     )
 
     # ===========================
-    # MAP SERVER
-    # ===========================
-    map_server = Node(
-        package='nav2_map_server',
-        executable='map_server',
-        name='map_server',
-        output='screen',
-        parameters=[
-            {'use_sim_time': use_sim_time},
-            {'yaml_filename': map_yaml_path}
-        ]
-    )
-
-    # ===========================
-    # AMCL
-    # ===========================
-    amcl = Node(
-        package='nav2_amcl',
-        executable='amcl',
-        name='amcl',
-        output='screen',
-        parameters=[{
-            'use_sim_time': use_sim_time,
-            'base_frame_id': 'base_link',
-            'odom_frame_id': 'odom',
-            'global_frame_id': 'map',
-            'laser_frame_id': 'cloud',
-            'scan_topic': 'scan',
-        }],
-        remappings=[
-            ('scan', '/scan'),
-            ('odom', '/odom'),
-        ]
-    )
-
-    # ===========================
     # ROBOT DESCRIPTION
     # ===========================
     robot_description = {
@@ -112,7 +76,7 @@ def generate_launch_description():
         executable="joint_state_publisher",
         output="screen"
     )
-
+    
     # ===========================
     # DRIVERS
     # ===========================
@@ -133,6 +97,60 @@ def generate_launch_description():
         name="sdv_controller_node",
         output="screen"
     )
+    
+    # ===========================
+    # NUEVO NODO: traslate (sdv_pruebas)
+    # Encargado de llamar al planner y publicar el Path en /path
+    # ===========================
+    traslate_node = Node(
+        package="sdv_pruebas",
+        executable="sdv_translate",
+        name="sdv_translate",
+        output="screen"
+    )
+
+    # ===============================================
+    # NAV2 LIFECYCLE NODES
+    # TODOS deben tener 'autostart: False' para ser gestionados
+    # ===============================================
+
+    # ===========================
+    # MAP SERVER
+    # ===========================
+    map_server = Node(
+        package='nav2_map_server',
+        executable='map_server',
+        name='map_server',
+        output='screen',
+        parameters=[
+            {'use_sim_time': use_sim_time},
+            {'yaml_filename': map_yaml_path},
+            {'autostart': False} # <-- Gestionado por Lifecycle Manager
+        ]
+    )
+
+    # ===========================
+    # AMCL
+    # ===========================
+    amcl = Node(
+        package='nav2_amcl',
+        executable='amcl',
+        name='amcl',
+        output='screen',
+        parameters=[{
+            'use_sim_time': use_sim_time,
+            'autostart': False, # <-- Gestionado por Lifecycle Manager
+            'base_frame_id': 'base_link',
+            'odom_frame_id': 'odom',
+            'global_frame_id': 'map',
+            'laser_frame_id': 'cloud',
+            'scan_topic': 'scan',
+        }],
+        remappings=[
+            ('scan', '/scan'),
+            ('odom', '/odom'),
+        ]
+    )
 
     # ===========================
     # NAV2: PLANNER SERVER
@@ -144,6 +162,7 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'use_sim_time': use_sim_time,
+            'autostart': False, # <-- Gestionado por Lifecycle Manager
             'expected_planner_frequency': 5.0,
             'planner_plugins': ['GridBased'],
             'GridBased': {
@@ -157,6 +176,7 @@ def generate_launch_description():
 
     # ===========================
     # NAV2: CONTROLLER SERVER
+    # Se añade el remapeo crucial ('plan', '/path')
     # ===========================
     controller_server = Node(
         package='nav2_controller',
@@ -165,6 +185,7 @@ def generate_launch_description():
         output='screen',
         parameters=[{
             'use_sim_time': use_sim_time,
+            'autostart': False, # <-- Gestionado por Lifecycle Manager
     
             # Frecuencia del controlador
             'controller_frequency': 20.0,
@@ -214,63 +235,41 @@ def generate_launch_description():
         }],
         remappings=[
             ('cmd_vel', '/cmd_vel'),
-            ('odom', '/odom')
+            ('odom', '/odom'),
+            ('plan', '/path') # <-- CRÍTICO: Lee el path publicado por sdv_translate
+        ]
+    )
+
+    # ===========================
+    # NAV2: LIFECYCLE MANAGER (Orquestador)
+    # ===========================
+    nav2_nodes_to_manage = [
+        'map_server', 
+        'amcl', 
+        'planner_server', 
+        'controller_server'
+    ]
+    
+    lifecycle_manager = Node(
+        package='nav2_lifecycle_manager',
+        executable='lifecycle_manager',
+        name='lifecycle_manager_navigation',
+        output='screen',
+        parameters=[
+            {'use_sim_time': use_sim_time},
+            {'autostart': True}, # Inicia, configura y activa automáticamente los nodos listados
+            {'node_names': nav2_nodes_to_manage}
         ]
     )
 
 
     # ===========================
-    # NUEVO NODO: traslate (sdv_pruebas)
-    # ===========================
-    traslate_node = Node(
-        package="sdv_pruebas",
-        executable="sdv_translate",
-        name="sdv_translate",
-        output="screen"
-    )
-
-    # ===========================
-    # LIFECYCLE
-    # ===========================
-    lifecycle_cmds = [
-        # MAP SERVER
-        TimerAction(period=2.0, actions=[
-            ExecuteProcess(cmd=['ros2', 'lifecycle', 'set', '/map_server', 'configure'])
-        ]),
-        TimerAction(period=3.0, actions=[
-            ExecuteProcess(cmd=['ros2', 'lifecycle', 'set', '/map_server', 'activate'])
-        ]),
-
-        # AMCL
-        TimerAction(period=4.5, actions=[
-            ExecuteProcess(cmd=['ros2', 'lifecycle', 'set', '/amcl', 'configure'])
-        ]),
-        TimerAction(period=5.5, actions=[
-            ExecuteProcess(cmd=['ros2', 'lifecycle', 'set', '/amcl', 'activate'])
-        ]),
-
-        # PLANNER
-        TimerAction(period=13.0, actions=[
-            ExecuteProcess(cmd=['ros2', 'lifecycle', 'set', '/planner_server', 'configure'])
-        ]),
-        TimerAction(period=14.0, actions=[
-            ExecuteProcess(cmd=['ros2', 'lifecycle', 'set', '/planner_server', 'activate'])
-        ]),
-
-        # CONTROLLER
-        TimerAction(period=15.0, actions=[
-            ExecuteProcess(cmd=['ros2', 'lifecycle', 'set', '/controller_server', 'configure'])
-        ]),
-        TimerAction(period=16.0, actions=[
-            ExecuteProcess(cmd=['ros2', 'lifecycle', 'set', '/controller_server', 'activate'])
-        ]),
-    ]
-
-    # ===========================
-    # RETURN
+    # RETURN (Incluye el Lifecycle Manager y elimina las acciones temporizadas)
     # ===========================
     return LaunchDescription([
         use_sim_time_arg,
+        
+        # Sistemas de bajo nivel
         cloud_tf,
         robot_state_pub,
         joint_state_pub,
@@ -278,9 +277,13 @@ def generate_launch_description():
         serial_node,
         controller_node,
         traslate_node,
+
+        # Nodos Nav2
         map_server,
         amcl,
         planner_server,
         controller_server,
-        *lifecycle_cmds
+        
+        # Orquestador Nav2
+        lifecycle_manager
     ])
