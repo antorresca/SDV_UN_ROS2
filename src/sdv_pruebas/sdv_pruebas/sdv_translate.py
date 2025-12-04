@@ -18,14 +18,14 @@ class SDVTranslate(Node):
         self.planner_client = ActionClient(
             self,
             ComputePathToPose,
-            '/planner_server/compute_path_to_pose' # Usamos el nombre completo del Action Server
+            '/compute_path_to_pose' # Usamos el nombre completo del Action Server
         )
 
         # 2. Cliente para el Controller Server (FollowPath)
         self.controller_client = ActionClient(
             self,
             FollowPath,
-            '/controller_server/follow_path'
+            '/follow_path'
         )
         
         # Eliminamos path_pub ya que el path se enviará directamente por la acción
