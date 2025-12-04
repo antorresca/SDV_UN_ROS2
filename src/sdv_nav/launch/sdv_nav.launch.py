@@ -25,7 +25,7 @@ def generate_launch_description():
     amcl_params_file = PathJoinSubstitution([
         get_package_share_directory("sdv_nav"),
         "config",
-        "amcl_fixed.yaml"  # Archivo con configuración corregida
+        "amcl_fixed.yaml" 
     ])
     
     # =======================
@@ -82,22 +82,51 @@ def generate_launch_description():
         output='screen',
         parameters=[
             {'use_sim_time': use_sim_time},
-            {'yaml_filename': map_yaml_path}
+            {'yaml_filename': map_yaml_path},
+            {"frame_id": "map"}
         ]
     )
     
     # =======================
     # AMCL
     # =======================
+
+
     amcl = Node(
         package='nav2_amcl',
         executable='amcl',
         name='amcl',
         output='screen',
-        parameters=[amcl_params_file],
+        parameters=[
+        {
+        'use_sim_time': False,
+        'base_frame_id': 'base_link',
+        'odom_frame_id': 'odom',
+        'global_frame_id': 'map',
+        'laser_frame_id': 'cloud',
+        'odom_topic': 'odom',
+        'scan_topic': 'scan',
+        'map_topic': 'map',
+        'tf_broadcast': True,
+        'transform_tolerance': 1.0,
+        'set_initial_pose': False,
+        'min_particles': 100,
+        'max_particles': 500,
+        'update_min_d': 0.2,
+        'update_min_a': 0.5,
+        'laser_model_type': 'likelihood_field',
+        'laser_max_range': 10.0,
+        'max_beams': 30,
+        'odom_model_type': 'diff',
+        'alpha1': 0.2,
+        'alpha2': 0.2,
+        'alpha3': 0.2,
+        'alpha4': 0.2
+        }
+        ],
         remappings=[
-            ('scan', '/scan'),
-            ('odom', '/odom'),
+        ('scan', '/scan'),
+        ('odom', '/odom'),
         ]
     )
     
@@ -172,16 +201,43 @@ def generate_launch_description():
         name='controller_server',
         output='screen',
         parameters=[
-            PathJoinSubstitution([
-                get_package_share_directory('sdv_nav'),
-                'config',
-                'controller_params.yaml'
-            ])
+        {
+        'use_sim_time': False,
+        'controller_frequency': 20.0,
+        'FollowPath': {
+        'plugin': 'dwb_core::DWBLocalPlanner',
+        'critics': [
+        'RotateToGoal',
+        'Oscillation',
+        'ObstacleFootprint',
+        'GoalAlign',
+        'PathAlign',
+        'PathDist',
+        'GoalDist'
+        ],
+        'base_frame_id': 'base_link',
+        'global_frame_id': 'map',
+        'odom_frame_id': 'odom',
+        'min_vel_x': 0.0,
+        'max_vel_x': 0.5,
+        'min_vel_theta': -1.0,
+        'max_vel_theta': 1.0,
+        'vx_samples': 10,
+        'vtheta_samples': 20,
+        'acc_lim_x': 1.0,
+        'acc_lim_theta': 2.0,
+        'obstacle_radius': 0.22,
+        'footprint_model': {
+        'type': 'circle',
+        'radius': 0.22
+        }
+        }
+        }
         ],
         remappings=[
-            ('cmd_vel', '/cmd_vel'),
-            ('global_plan', '/a_star/path'),  # ← IMPORTANTE
-            ('odom', '/odom')
+        ('cmd_vel', '/cmd_vel'),
+        ('global_plan', '/a_star/path'),
+        ('odom', '/odom')
         ]
     )
     
@@ -234,11 +290,56 @@ def generate_launch_description():
                 )
             ]
         ),
+        TimerAction(
+            period=6.5,
+            actions=[
+                ExecuteProcess(
+                    cmd=['ros2', 'param', 'set', '/amcl', 'base_base_frame_id','base_link'],
+                    output='screen'
+                )
+            ]
+        ),
+        TimerAction(
+            period=7.0,
+            actions=[
+                ExecuteProcess(
+                    cmd=['ros2', 'lifecycle', 'set', '/amcl', 'deactivate'],
+                    output='screen'
+                )
+            ]
+        ),
+        TimerAction(
+            period=8.0,
+            actions=[
+                ExecuteProcess(
+                    cmd=['ros2', 'lifecycle', 'set', '/amcl', 'cleanup'],
+                    output='screen'
+                )
+            ]
+        ),
+        TimerAction(
+            period=10.0,
+            actions=[
+                ExecuteProcess(
+                    cmd=['ros2', 'lifecycle', 'set', '/amcl', 'configure'],
+                    output='screen'
+                )
+            ]
+        ),
+        TimerAction(
+            period=11.5,
+            actions=[
+                ExecuteProcess(
+                    cmd=['ros2', 'lifecycle', 'set', '/amcl', 'activate'],
+                    output='screen'
+                )
+            ]
+        ),
         # =======================
         # CONTROLLER SERVER (RPP)
         # =======================
         TimerAction(
-            period=7.0,
+            period=13.0,
             actions=[
                 ExecuteProcess(
                     cmd=['ros2', 'lifecycle', 'set', '/controller_server', 'configure'],
@@ -247,7 +348,7 @@ def generate_launch_description():
             ]
         ),
         TimerAction(
-            period=8.0,
+            period=14.0,
             actions=[
                 ExecuteProcess(
                     cmd=['ros2', 'lifecycle', 'set', '/controller_server', 'activate'],
