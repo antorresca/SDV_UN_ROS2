@@ -1136,13 +1136,13 @@ namespace sick_scan_xd
     // send sopas cmd
 
     std::string reqStr = replyToString(requestStr);
-    ROS_INFO_STREAM("Sending  : " << stripControl(requestStr));
+    //ROS_INFO_STREAM("Sending  : " << stripControl(requestStr));
     result = sendSOPASCommand(cmdStr.c_str(), reply, cmdLen);
     std::string replyStr = replyToString(*reply);
     std::vector<unsigned char> replyVec;
     replyStr = "<STX>" + replyStr + "<ETX>";
     replyVec = stringToVector(replyStr);
-    ROS_INFO_STREAM("Receiving: " << stripControl(replyVec, 96));
+    //ROS_INFO_STREAM("Receiving: " << stripControl(replyVec, 96));
 
     if (result != 0)
     {
