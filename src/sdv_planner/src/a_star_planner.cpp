@@ -19,9 +19,12 @@ AStarPlanner::AStarPlanner() : Node("a_star_node")
 
     pose_sub_ = create_subscription<geometry_msgs::msg::PoseStamped>(
         "/goal_pose", 10, std::bind(&AStarPlanner::goalCallback, this, std::placeholders::_1));
-
+    
+    rclcpp::QoS qos = rclcpp::QoS(rclcpp::KeepLast(1));
+    qos.reliable();
+    qos.durability_volatile();
     path_pub_ = create_publisher<nav_msgs::msg::Path>(
-        "/a_star/path", 10
+        "/a_star/path", qos
     );
 
     map_pub_ = create_publisher<nav_msgs::msg::OccupancyGrid>(
