@@ -28,12 +28,6 @@ def generate_launch_description():
 
     sdv_description_pkg = get_package_share_directory('sdv_sim')
 
-    bt_xml = PathJoinSubstitution([
-        get_package_share_directory('nav2_bt_navigator'),
-        'behavior_trees',
-        'navigate_w_replanning_and_recovery.xml'
-    ])
-
     sick_launch = os.path.join(
         get_package_share_directory('sick_scan_xd'),
         'launch',
@@ -197,28 +191,13 @@ def generate_launch_description():
     )
 
     # ===========================
-    # NAV2: BT NAVIGATOR
+    # NUEVO NODO: traslate (sdv_pruebas)
     # ===========================
-    bt_navigator = Node(
-        package='nav2_bt_navigator',
-        executable='bt_navigator',
-        name='bt_navigator',
-        output='screen',
-        parameters=[{
-            'use_sim_time': use_sim_time,
-            'default_nav_to_pose_bt_xml': bt_xml
-        }]
-    )
-
-    # ===========================
-    # NAV2: WAYPOINT FOLLOWER (obligatorio)
-    # ===========================
-    waypoint_follower = Node(
-        package='nav2_waypoint_follower',
-        executable='waypoint_follower',
-        name='waypoint_follower',
-        output='screen',
-        parameters=[{'use_sim_time': use_sim_time}]
+    traslate_node = Node(
+        package="sdv_pruebas",
+        executable="sdv_translate",
+        name="sdv_translate",
+        output="screen"
     )
 
     # ===========================
@@ -234,69 +213,12 @@ def generate_launch_description():
         ]),
 
         # AMCL
-TimerAction(
-            period=4.5,
-            actions=[
-                ExecuteProcess(
-                    cmd=['ros2', 'lifecycle', 'set', '/amcl', 'configure'],
-                    output='screen'
-                )
-            ]
-        ),
-        TimerAction(
-            period=5.5,
-            actions=[
-                ExecuteProcess(
-                    cmd=['ros2', 'lifecycle', 'set', '/amcl', 'activate'],
-                    output='screen'
-                )
-            ]
-        ),
-        TimerAction(
-            period=6.5,
-            actions=[
-                ExecuteProcess(
-                    cmd=['ros2', 'param', 'set', '/amcl', 'base_base_frame_id','base_link'],
-                    output='screen'
-                )
-            ]
-        ),
-        TimerAction(
-            period=7.0,
-            actions=[
-                ExecuteProcess(
-                    cmd=['ros2', 'lifecycle', 'set', '/amcl', 'deactivate'],
-                    output='screen'
-                )
-            ]
-        ),
-        TimerAction(
-            period=8.0,
-            actions=[
-                ExecuteProcess(
-                    cmd=['ros2', 'lifecycle', 'set', '/amcl', 'cleanup'],
-                    output='screen'
-                )
-            ]
-        ),
-        TimerAction(
-            period=10.0,
-            actions=[
-                ExecuteProcess(
-                    cmd=['ros2', 'lifecycle', 'set', '/amcl', 'configure'],
-                    output='screen'
-                )
-            ]
-        ),
-        TimerAction(
-            period=11.5,
-            actions=[
-                ExecuteProcess(
-                    cmd=['ros2', 'lifecycle', 'set', '/amcl', 'activate'],
-                    output='screen'
-                )
-            ]
-        ),
+        TimerAction(period=4.5, actions=[
+            ExecuteProcess(cmd=['ros2', 'lifecycle', 'set', '/amcl', 'configure'])
+        ]),
+        TimerAction(period=5.5, actions=[
+            ExecuteProcess(cmd=['ros2', 'lifecycle', 'set', '/amcl', 'activate'])
+        ]),
 
         # PLANNER
         TimerAction(period=13.0, actions=[
@@ -313,22 +235,6 @@ TimerAction(
         TimerAction(period=16.0, actions=[
             ExecuteProcess(cmd=['ros2', 'lifecycle', 'set', '/controller_server', 'activate'])
         ]),
-
-        # BT NAVIGATOR
-        TimerAction(period=17.0, actions=[
-            ExecuteProcess(cmd=['ros2', 'lifecycle', 'set', '/bt_navigator', 'configure'])
-        ]),
-        TimerAction(period=18.0, actions=[
-            ExecuteProcess(cmd=['ros2', 'lifecycle', 'set', '/bt_navigator', 'activate'])
-        ]),
-
-        # WAYPOINT FOLLOWER
-        TimerAction(period=19.0, actions=[
-            ExecuteProcess(cmd=['ros2', 'lifecycle', 'set', '/waypoint_follower', 'configure'])
-        ]),
-        TimerAction(period=20.0, actions=[
-            ExecuteProcess(cmd=['ros2', 'lifecycle', 'set', '/waypoint_follower', 'activate'])
-        ]),
     ]
 
     # ===========================
@@ -342,11 +248,10 @@ TimerAction(
         sick_node,
         serial_node,
         controller_node,
+        traslate_node,
         map_server,
         amcl,
         planner_server,
         controller_server,
-        bt_navigator,
-        waypoint_follower,
         *lifecycle_cmds
     ])
