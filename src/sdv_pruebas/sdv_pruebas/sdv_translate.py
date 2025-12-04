@@ -1,45 +1,148 @@
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import PoseStamped
-from nav2_msgs.action import ComputePathToPose
+from nav2_msgs.action import ComputePathToPose, FollowPath
 from rclpy.action import ActionClient
 from nav_msgs.msg import Path
+import time
+import sys
 
 class SDVTranslate(Node):
     def __init__(self):
         super().__init__('sdv_translate')
+        self.get_logger().info("SDVTranslate node started. Initializing clients...")
 
         self.create_subscription(PoseStamped, '/goal_pose', self.goal_callback, 10)
 
-        self.client = ActionClient(
+        # 1. Cliente para el Planner Server (ComputePathToPose)
+        self.planner_client = ActionClient(
             self,
             ComputePathToPose,
-            '/planner_server/compute_path_to_pose'
+            '/planner_server/compute_path_to_pose' # Usamos el nombre completo del Action Server
         )
 
-        self.path_pub = self.create_publisher(Path, '/path', 10)
+        # 2. Cliente para el Controller Server (FollowPath)
+        self.controller_client = ActionClient(
+            self,
+            FollowPath,
+            '/controller_server/follow_path'
+        )
+        
+        # Eliminamos path_pub ya que el path se enviará directamente por la acción
+        # self.path_pub = self.create_publisher(Path, '/path', 10) 
 
     def goal_callback(self, pose):
-        self.get_logger().info("Sending goal to planner...")
+        self.get_logger().info("Received goal from /goal_pose. Starting planning process...")
 
+        # ==============================================================
+        # 1. VERIFICACIÓN DE SERVER CON TIMEOUT (Para el Planner)
+        # ==============================================================
+        self.get_logger().info("Waiting for planner server to become available...")
+        
+        # Esperamos un máximo de 5 segundos
+        if not self.planner_client.wait_for_server(timeout_sec=5.0):
+            self.get_logger().error("Planner Server NOT available after 5 seconds. Aborting goal.")
+            return
+
+        self.get_logger().info("Planner Server is available. Sending goal...")
+
+        # ==============================================================
+        # 2. ENVÍO DEL GOAL AL PLANNER
+        # ==============================================================
         goal_msg = ComputePathToPose.Goal()
         goal_msg.goal = pose
+        
+        # Si no se especifica el 'start', el planificador usa la posición actual del robot.
+        # Es buena práctica definir al menos el frame_id.
+        goal_msg.start = PoseStamped()
+        goal_msg.start.header.frame_id = 'map' 
 
-        self.client.wait_for_server()
+        send_goal_future = self.planner_client.send_goal_async(goal_msg)
+        send_goal_future.add_done_callback(self.path_response)
 
-        send_goal_future = self.client.send_goal_async(goal_msg)
-        send_goal_future.add_done_callback(self.goal_response)
+    def path_response(self, future):
+        goal_handle = future.result()
+        
+        if not goal_handle.accepted:
+            self.get_logger().error('Goal de Planificación rechazado por el servidor.')
+            return
 
-    def goal_response(self, future):
-        result = future.result().get_result()
-        self.get_logger().info("Planner returned a path!")
-        self.path_pub.publish(result.path)
+        self.get_logger().info("Planner accepted the goal. Waiting for path result...")
+        
+        # Espera el resultado del Planner
+        get_result_future = goal_handle.get_result_async()
+        get_result_future.add_done_callback(self.follow_path_request)
+
+
+    # ==============================================================
+    # 3. ENCUESTRA LA RUTA RECIBIDA Y LLAMA AL CONTROLLER
+    # ==============================================================
+    def follow_path_request(self, future):
+        
+        result_status = future.result().status
+        if result_status != 1: # Status 1 es 'GOAL_STATE_SUCCEEDED'
+            self.get_logger().error(f"Planning failed! Planner Status: {result_status}")
+            return
+            
+        result = future.result().result
+        path = result.path
+        
+        if not path.poses:
+            self.get_logger().warn("Planner returned an EMPTY path. Cannot follow.")
+            return
+
+        self.get_logger().info(f"Planner returned a path with {len(path.poses)} points. Sending to Controller...")
+
+        # ==============================================================
+        # 4. ENVÍO DEL GOAL AL CONTROLLER
+        # ==============================================================
+        
+        # Esperamos el Controller Server (con timeout, por si acaso)
+        if not self.controller_client.wait_for_server(timeout_sec=5.0):
+            self.get_logger().error("Controller Server NOT available after 5s. Aborting navigation.")
+            return
+
+        controller_goal = FollowPath.Goal()
+        controller_goal.path = path  # Envía la ruta directamente
+        controller_goal.controller_id = 'FollowPath' # Debe coincidir con la configuración del launch
+
+        send_goal_future = self.controller_client.send_goal_async(controller_goal)
+        send_goal_future.add_done_callback(self.controller_finished)
+
+
+    def controller_finished(self, future):
+        goal_handle = future.result()
+        
+        if not goal_handle.accepted:
+            self.get_logger().error('Goal de Seguimiento de Ruta rechazado por el controlador.')
+            return
+
+        self.get_logger().info("Controller accepted the path. Waiting for navigation result...")
+        
+        # Espera el resultado final del Controller
+        get_result_future = goal_handle.get_result_async()
+        get_result_future.add_done_callback(self.navigation_finished)
+
+
+    def navigation_finished(self, future):
+        final_status = future.result().status
+        # Status 3 es 'GOAL_STATE_SUCCEEDED'
+        if final_status == 3:
+            self.get_logger().info('✅ Navigation Finished: SUCCEEDED!')
+        else:
+            self.get_logger().warn(f'❌ Navigation Finished with non-success status: {final_status}')
+
 
 def main(args=None):
     rclpy.init(args=args)
     node = SDVTranslate()
-    rclpy.spin(node)
-    rclpy.shutdown()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+    finally:
+        node.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()
