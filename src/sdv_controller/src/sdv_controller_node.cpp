@@ -93,17 +93,8 @@ private:
         vx_ = msg->linear.x;
         wz_ = msg->angular.z;
 
-        // Cálculo PWM basado en cinemática diferencial
-        // v = (vr + vl)/2, w = (vr - vl)/L
-        // vr = v + (w*L)/2, vl = v - (w*L)/2
-        
-        // Velocidades de rueda en rad/s
-        double vr = (vx_ + (wz_ * wheel_base/2)) / wheel_radius;
-        double vl = (vx_ - (wz_ * wheel_base/2)) / wheel_radius;
-        
-        // Convertir a PWM (ajusta estos factores según tu hardware)
-        PWM_R = vr * 10.0;  // Factor de conversión ejemplo
-        PWM_L = vl * 10.0;
+        PWM_R = getPWM(vx_,wz_,true);
+        PWM_L = getPWM(vx_,wz_,false);
         
         // Limitar PWM
         PWM_R = std::clamp(PWM_R, -40.0, 40.0);
@@ -114,6 +105,28 @@ private:
         pub_motor_->publish(motor_msg);
         
         RCLCPP_DEBUG(this->get_logger(), "PWM R: %d, L: %d", (int)PWM_R, (int)PWM_L);
+    }
+
+    int getPWM(double V, double W,bool Side){
+        double wheel_radio = 0.075; //m
+        double wheel_base = 0.32;  //m
+        int factor = 0;
+
+        double w_wheel =  V/wheel_radio;
+
+        if(Side){ //If Side == True, it's right wheel
+            w_wheel -= (wheel_base*W)/wheel_radio;
+        }else{
+            w_wheel += (wheel_base*W)/wheel_radio;
+        };
+
+        if(w_wheel>0){
+        factor = 1;
+        }else{
+        factor = -1;
+        };
+
+        return (0.8333*(30/3.141592)*abs(w_wheel)+10)*factor;
     }
 
     void update_odometry() {
