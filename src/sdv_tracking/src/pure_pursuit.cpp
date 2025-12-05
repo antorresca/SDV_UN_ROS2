@@ -8,7 +8,7 @@
 namespace sdv_tracking
 {
 PurePursuit::PurePursuit() : Node("pure_pursuit_motion_planner_node"),
-    look_ahead_distance_(0.2), max_linear_velocity_(0.1), max_angular_velocity_(0.1)
+    look_ahead_distance_(0.2), max_linear_velocity_(0.1), max_angular_velocity_(0.1 )
 {
   tf_buffer_ = std::make_shared<tf2_ros::Buffer>(get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
@@ -27,7 +27,7 @@ PurePursuit::PurePursuit() : Node("pure_pursuit_motion_planner_node"),
 
   carrot_pub_ = create_publisher<geometry_msgs::msg::PoseStamped>("/pure_pursuit/carrot", 10);
   control_loop_ = create_wall_timer(
-    std::chrono::milliseconds(100), std::bind(&PurePursuit::controlLoop, this));
+    std::chrono::milliseconds(1000), std::bind(&PurePursuit::controlLoop, this));
 }
 
 void PurePursuit::pathCallback(const nav_msgs::msg::Path::SharedPtr path)
