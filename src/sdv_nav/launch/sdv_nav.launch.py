@@ -162,12 +162,10 @@ def generate_launch_description():
             'use_sim_time': use_sim_time,
             'autostart': False,
             'expected_planner_frequency': 5.0,
-            'planner_plugins': ['GridBased'],
-            'GridBased': {
-                'plugin': 'nav2_navfn_planner/NavfnPlanner',
-                'tolerance': 0.5,
-                'use_astar': False,
-                'allow_unknown': True
+            'planner_plugins': ['AStarPlanner'],
+            'AStarPlanner': {
+                'plugin': 'sdv_planner::AStarPlanner',
+                'tolerance': 0.5
             }
         }]
     )
