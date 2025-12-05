@@ -109,6 +109,20 @@ def generate_launch_description():
         name="sdv_controller_node",
         output="screen"
     )
+
+    tracking_node = Node(
+        package="sdv_tracking",
+        executable="pure_pursuit",
+        name="sdv_controller_node",
+        output="screen"
+    )
+
+    planner_node = Node(
+        package="sdv_planner",
+        executable="a_star_planner",
+        name="sdv_planner",
+        output="screen"
+    )     
     
     # ===========================
     # NUEVO NODO: traslate (sdv_pruebas)
@@ -301,6 +315,8 @@ def generate_launch_description():
         serial_node,
         controller_node,
         traslate_node,
+        tracking_node,
+        planner_node,
 
         # Nodos Nav2
         map_server,
