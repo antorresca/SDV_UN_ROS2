@@ -8,7 +8,7 @@
 namespace sdv_tracking
 {
 PurePursuit::PurePursuit() : Node("pure_pursuit_motion_planner_node"),
-    look_ahead_distance_(0.1), max_linear_velocity_(0.3), max_angular_velocity_(1.0)
+    look_ahead_distance_(0.1), max_linear_velocity_(0.1), max_angular_velocity_(0.1)
 {
   tf_buffer_ = std::make_shared<tf2_ros::Buffer>(get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
@@ -67,9 +67,16 @@ void PurePursuit::controlLoop()
   double dy = carrot_pose.pose.position.y - robot_pose_stamped.pose.position.y;
   double distance = std::sqrt(dx * dx + dy * dy);
   if(distance <= 0.1){
-    RCLCPP_INFO(get_logger(), "Goal Reached!");
-    global_plan_.poses.clear();
-    return;
+      RCLCPP_INFO(get_logger(), "Goal Reached!");
+
+      // 🔥 NUEVO: detener el robot
+      geometry_msgs::msg::Twist stop_cmd;
+      stop_cmd.linear.x = 0.0;
+      stop_cmd.angular.z = 0.0;
+      cmd_pub_->publish(stop_cmd);
+
+      global_plan_.poses.clear();
+      return;
   }
 
   carrot_pub_->publish(carrot_pose);
