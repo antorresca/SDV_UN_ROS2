@@ -45,7 +45,7 @@ void PurePursuit::controlLoop()
   geometry_msgs::msg::TransformStamped robot_pose;
   try {
     robot_pose = tf_buffer_->lookupTransform(
-      "odom", "base_footprint", tf2::TimePointZero);
+    "odom", "base_footprint", tf2::TimePointZero);
   } catch (tf2::TransformException &ex) {
     RCLCPP_WARN(get_logger(), "Could not transform: %s", ex.what());
     return;
@@ -61,18 +61,15 @@ void PurePursuit::controlLoop()
   robot_pose_stamped.pose.position.x = robot_pose.transform.translation.x;
   robot_pose_stamped.pose.position.y = robot_pose.transform.translation.y;
   robot_pose_stamped.pose.orientation = robot_pose.transform.rotation;
-
   auto carrot_pose = getCarrotPose(robot_pose_stamped);
 
-  // compute vector to carrot in robot frame
   double dx = carrot_pose.pose.position.x - robot_pose_stamped.pose.position.x;
   double dy = carrot_pose.pose.position.y - robot_pose_stamped.pose.position.y;
   double distance = std::sqrt(dx * dx + dy * dy);
-
-  // goal reached
   if(distance <= 0.1){
       RCLCPP_INFO(get_logger(), "Goal Reached!");
 
+      // 🔥 NUEVO: detener el robot
       geometry_msgs::msg::Twist stop_cmd;
       stop_cmd.linear.x = 0.0;
       stop_cmd.angular.z = 0.0;
@@ -83,88 +80,38 @@ void PurePursuit::controlLoop()
   }
 
   carrot_pub_->publish(carrot_pose);
-
-  // Transform carrot into robot frame (so carrot_pose.pose.x,y are relative)
-  tf2::Transform robot_tf, carrot_tf, carrot_in_robot_tf;
+            
+  // Calculate the curvature to the look-ahead point
+  tf2::Transform carrot_pose_robot_tf, robot_tf, carrot_pose_tf;
   tf2::fromMsg(robot_pose_stamped.pose, robot_tf);
-  tf2::fromMsg(carrot_pose.pose, carrot_tf);
-  carrot_in_robot_tf = robot_tf.inverse() * carrot_tf;
-  geometry_msgs::msg::Pose carrot_in_robot_msg;
-  tf2::toMsg(carrot_in_robot_tf, carrot_in_robot_msg);
-
-  double cx = carrot_in_robot_msg.position.x;
-  double cy = carrot_in_robot_msg.position.y;
-
-  // if carrot is behind robot, slow down and turn in place if necessary
-  if (cx < 0.0) {
-    // carrot behind -> reduce speed to allow rotation or select goal directly
-    geometry_msgs::msg::Twist cmd_vel;
-    cmd_vel.linear.x = 0.0;
-    double yaw_error = std::atan2(cy, cx);
-    double ang = std::clamp(2.0 * yaw_error, -max_angular_velocity_, max_angular_velocity_);
-    cmd_vel.angular.z = ang;
-    cmd_pub_->publish(cmd_vel);
-    return;
-  }
-
-  // Pure pursuit curvature and alternative: use heading error alpha
-  double alpha = std::atan2(cy, cx);              // heading to carrot in robot frame
-  double curvature = getCurvature(carrot_in_robot_msg);
-
-  // compute linear speed scaled by heading error (slower on sharper turns)
-  double heading_scale = std::max(0.0, 1.0 - std::min(std::abs(alpha) / (M_PI/4.0), 1.0)); // reduces speed if |alpha| > 45deg
-  double linear = max_linear_velocity_ * heading_scale;
-
-  // prefer angular = linear * curvature (classical pure pursuit)
-  double angular = linear * curvature;
-
-  // clamp
-  if (linear > max_linear_velocity_) linear = max_linear_velocity_;
-  if (linear < 0.0) linear = 0.0;
-  angular = std::clamp(angular, -max_angular_velocity_, max_angular_velocity_);
-
-  // publish
+  tf2::fromMsg(carrot_pose.pose, carrot_pose_tf);
+  carrot_pose_robot_tf = robot_tf.inverse() * carrot_pose_tf;
+  tf2::toMsg(carrot_pose_robot_tf, carrot_pose.pose);
+  double curvature = getCurvature(carrot_pose.pose);
+            
+  // Create and publish the velocity command
   geometry_msgs::msg::Twist cmd_vel;
-  cmd_vel.linear.x = linear;
-  cmd_vel.angular.z = angular;
+  cmd_vel.linear.x = max_linear_velocity_;
+  cmd_vel.angular.z = curvature * max_angular_velocity_;
+
   cmd_pub_->publish(cmd_vel);
 }
 
 geometry_msgs::msg::PoseStamped PurePursuit::getCarrotPose(const geometry_msgs::msg::PoseStamped & robot_pose)
 {
-  // If plan empty, return last
-  if (global_plan_.poses.empty()) {
-    geometry_msgs::msg::PoseStamped empty;
-    return empty;
-  }
-
-  // 1) find nearest index on the path to the robot
-  size_t nearest_idx = 0;
-  double nearest_dist = std::numeric_limits<double>::infinity();
-  for (size_t i = 0; i < global_plan_.poses.size(); ++i) {
-    double dx = global_plan_.poses[i].pose.position.x - robot_pose.pose.position.x;
-    double dy = global_plan_.poses[i].pose.position.y - robot_pose.pose.position.y;
-    double d = std::hypot(dx, dy);
-    if (d < nearest_dist) {
-      nearest_dist = d;
-      nearest_idx = i;
+  geometry_msgs::msg::PoseStamped carrot_pose = global_plan_.poses.back();
+  for (auto pose_it = global_plan_.poses.rbegin(); pose_it != global_plan_.poses.rend(); ++pose_it) {
+    double dx = pose_it->pose.position.x - robot_pose.pose.position.x;
+    double dy = pose_it->pose.position.y - robot_pose.pose.position.y;
+    double distance = std::sqrt(dx * dx + dy * dy);
+    if(distance > look_ahead_distance_){
+      carrot_pose = *pose_it;
+    } else {
+      break;
     }
   }
-
-  // 2) from nearest index, advance until we find the first point with distance >= look_ahead_distance_
-  for (size_t i = nearest_idx; i < global_plan_.poses.size(); ++i) {
-    double dx = global_plan_.poses[i].pose.position.x - robot_pose.pose.position.x;
-    double dy = global_plan_.poses[i].pose.position.y - robot_pose.pose.position.y;
-    double d = std::hypot(dx, dy);
-    if (d >= look_ahead_distance_) {
-      return global_plan_.poses[i];
-    }
-  }
-
-  // 3) if none found, return the final goal
-  return global_plan_.poses.back();
+  return carrot_pose;
 }
-
 
 double PurePursuit::getCurvature(const geometry_msgs::msg::Pose & carrot_pose)
 {
