@@ -49,6 +49,19 @@ def generate_launch_description():
         ]
     )
 
+    footprint_tf = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='static_tf_footprint',
+        output='screen',
+        arguments=[
+            "0", "0", "0",
+            "0", "0", "0",
+            "base_link",
+            "base_footprint"
+        ]
+    )
+
     # ===========================
     # ROBOT DESCRIPTION
     # ===========================
@@ -281,6 +294,7 @@ def generate_launch_description():
         
         # Sistemas de bajo nivel
         cloud_tf,
+        footprint_tf,
         robot_state_pub,
         joint_state_pub,
         sick_node,
