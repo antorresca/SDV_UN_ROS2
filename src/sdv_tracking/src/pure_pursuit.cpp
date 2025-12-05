@@ -8,7 +8,7 @@
 namespace sdv_tracking
 {
 PurePursuit::PurePursuit() : Node("pure_pursuit_motion_planner_node"),
-    look_ahead_distance_(0.3), max_linear_velocity_(0.1), max_angular_velocity_(0.1)
+    look_ahead_distance_(0.1), max_linear_velocity_(0.1), max_angular_velocity_(0.1)
 {
   tf_buffer_ = std::make_shared<tf2_ros::Buffer>(get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
