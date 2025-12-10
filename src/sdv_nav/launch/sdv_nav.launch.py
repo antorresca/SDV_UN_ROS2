@@ -113,7 +113,7 @@ def generate_launch_description():
     tracking_node = Node(
         package="sdv_tracking",
         executable="pure_pursuit",
-        name="sdv_controller_node",
+        name="sdv_tracking_node",
         output="screen"
     )
 
