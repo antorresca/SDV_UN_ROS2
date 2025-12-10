@@ -125,16 +125,6 @@ def generate_launch_description():
     )     
 
     # ===========================
-    # NODO: translate
-    # ===========================
-    traslate_node = Node(
-        package="sdv_pruebas",
-        executable="sdv_translate",
-        name="sdv_translate",
-        output="screen"
-    )
-
-    # ===========================
     # LASER ODOMETRY (Hector remplacé)
     # ===========================
     laser_scan_matcher = Node(
@@ -179,6 +169,22 @@ def generate_launch_description():
             'global_frame_id': 'map',
             'laser_frame_id': 'cloud',
             'scan_topic': 'scan',
+            'update_min_d': 0.5,  # Aumentado de un valor típico de 0.2
+            'update_min_a': 0.2,  # Aumentado de un valor típico de 0.1
+            
+            # 2. Parámetros del Modelo de Movimiento (Para desconfiar de la Odometría)
+            # Estos indican a AMCL que espere mucha más incertidumbre (dispersión de partículas)
+            # en la estimación de movimiento basada en la odometría.
+            'odom_alpha1': 0.6,   # Error de rotación causado por rotación
+            'odom_alpha2': 0.6,   # Error de rotación causado por traslación
+            'odom_alpha3': 0.8,   # Error de traslación causado por traslación
+            'odom_alpha4': 0.4,   # Error de traslación causado por rotación
+
+            # 3. Parámetros del Modelo de Sensor (Para reducir la confianza en el LiDAR ruidoso)
+            # Reducir 'laser_z_hit' le dice a AMCL que el sensor tiene más errores (ruido), 
+            # amortiguando la corrección agresiva de pose.
+            'laser_model_type': 'likelihood_field_prob',
+            'laser_z_hit': 0.85,  # Reducido de un valor típico de 0.95
         }],
         remappings=[
             ('scan', '/scan'),
@@ -220,7 +226,6 @@ def generate_launch_description():
         sick_node,
         serial_node,
         controller_node,
-        traslate_node,
         tracking_node,
         planner_node,
 
