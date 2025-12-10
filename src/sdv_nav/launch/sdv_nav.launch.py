@@ -194,7 +194,7 @@ def generate_launch_description():
             'map_frame': 'map'
         }],
         remappings=[
-            ('scan', '/scan')
+            ('scan', '/scan'),
             ('map', '/map_dinamico'),              
             ('map_metadata', '/map_dinamico_metadata')
         ]
