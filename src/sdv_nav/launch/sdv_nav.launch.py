@@ -301,7 +301,7 @@ def generate_launch_description():
         planner_node,
 
         # Odometry via Laser Scan Matching
-        laser_scan_matcher,
+        laser_scan_matcher
 
         # Nav2
         """ map_server,
