@@ -157,23 +157,46 @@ def generate_launch_description():
     # ===========================
     # AMCL
     # ===========================
-    amcl = Node(
-        package='nav2_amcl',
-        executable='amcl',
-        name='amcl',
+#    amcl = Node(
+#        package='nav2_amcl',
+#        executable='amcl',
+#        name='amcl',
+#        output='screen',
+#        parameters=[{
+#            'use_sim_time': use_sim_time,
+#            'autostart': False,
+#            'base_frame_id': 'base_link',
+#            'odom_frame_id': 'odom',
+#            'global_frame_id': 'map',
+#            'laser_frame_id': 'cloud',
+#            'scan_topic': 'scan',
+#        }],
+#        remappings=[
+#            ('scan', '/scan'),
+#            ('odom', '/odom'),
+#        ]
+#    )
+
+    # ===========================
+    # HECTOR SLAM
+    # ===========================
+    hector_slam = Node(
+        package='hector_mapping',
+        executable='hector_mapping',
+        name='hector_mapping',
         output='screen',
         parameters=[{
             'use_sim_time': use_sim_time,
-            'autostart': False,
-            'base_frame_id': 'base_link',
-            'odom_frame_id': 'odom',
-            'global_frame_id': 'map',
-            'laser_frame_id': 'cloud',
-            'scan_topic': 'scan',
+            'pub_map_scanmatch_transform': True,
+            'tf_map_scanmatch_transform_frame_name': 'map',
+            'base_frame': 'base_link',
+            'odom_frame': 'odom',
+            'map_frame': 'map'
         }],
         remappings=[
-            ('scan', '/scan'),
-            ('odom', '/odom'),
+            ('scan', '/scan')
+            ('map', '/map_dinamico'),              
+            ('map_metadata', '/map_dinamico_metadata')
         ]
     )
 
@@ -282,7 +305,7 @@ def generate_launch_description():
     # ===========================
     nav2_nodes_to_manage = [
         'map_server', 
-        'amcl', 
+        #'amcl', 
         'planner_server', 
         'controller_server'
     ]
@@ -317,10 +340,11 @@ def generate_launch_description():
         traslate_node,
         tracking_node,
         planner_node,
+        hector_slam,
 
         # Nodos Nav2
         map_server,
-        amcl,
+        #amcl,
         planner_server,
         controller_server,
         
