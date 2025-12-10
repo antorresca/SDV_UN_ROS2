@@ -5,6 +5,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "geometry_msgs/msg/twist.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
+#include "geometry_msgs/msg/pose_with_covariance_stamped.hpp"
 #include "nav_msgs/msg/path.hpp"
 
 #include "tf2/LinearMath/Transform.h"
@@ -28,7 +29,7 @@ public:
         max_angular_velocity_ = get_parameter("max_angular_velocity").as_double();
 
         // SLAM Toolbox pose
-        pose_sub_ = create_subscription<geometry_msgs::msg::PoseStamped>(
+        pose_sub_ = create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
             "/pose", 10,
             std::bind(&PurePursuitSLAM::poseCallback, this, std::placeholders::_1));
 
@@ -48,23 +49,25 @@ public:
 private:
 
     // ----------------------------------------------------------
-    //   CALLBACKS
+    //   CALLBACK: POSE
     // ----------------------------------------------------------
-
-    void poseCallback(const geometry_msgs::msg::PoseStamped::SharedPtr msg)
+    void poseCallback(const geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg)
     {
-        current_pose_ = *msg;
+        // Convertir PoseWithCovarianceStamped → PoseStamped
+        current_pose_.header = msg->header;
+        current_pose_.pose = msg->pose.pose;
+
         pose_received_ = true;
     }
 
+    // ----------------------------------------------------------
+    //   CALLBACK: PATH
+    // ----------------------------------------------------------
     void pathCallback(const nav_msgs::msg::Path::SharedPtr msg)
     {
         global_plan_ = *msg;
-
-        // aseguramos que el plan esté en "map"
-        global_plan_.header.frame_id = "map";
+        global_plan_.header.frame_id = "map"; // asegurar consistencia
     }
-
 
     // ----------------------------------------------------------
     //   CONTROL LOOP
@@ -86,10 +89,8 @@ private:
         geometry_msgs::msg::PoseStamped carrot_pose =
             getCarrotPose(robot_pose);
 
-        // Publicación para debug
         carrot_pub_->publish(carrot_pose);
 
-        // Distancia al carrot
         double dx = carrot_pose.pose.position.x - robot_pose.pose.position.x;
         double dy = carrot_pose.pose.position.y - robot_pose.pose.position.y;
         double distance = std::sqrt(dx * dx + dy * dy);
@@ -102,10 +103,8 @@ private:
             return;
         }
 
-        // Calcular curvatura
         double curvature = computeCurvature(robot_pose, carrot_pose);
 
-        // Construir cmd_vel
         geometry_msgs::msg::Twist cmd;
         cmd.linear.x = max_linear_velocity_;
         cmd.angular.z = curvature * max_angular_velocity_;
@@ -113,11 +112,9 @@ private:
         cmd_pub_->publish(cmd);
     }
 
-
     // ----------------------------------------------------------
     //   PURE PURSUIT CORE
     // ----------------------------------------------------------
-
     geometry_msgs::msg::PoseStamped getCarrotPose(
         const geometry_msgs::msg::PoseStamped &robot_pose)
     {
@@ -144,7 +141,6 @@ private:
         const geometry_msgs::msg::PoseStamped &robot,
         const geometry_msgs::msg::PoseStamped &carrot)
     {
-        // Convertir a TF2
         tf2::Transform robot_tf, carrot_tf;
         tf2::fromMsg(robot.pose, robot_tf);
         tf2::fromMsg(carrot.pose, carrot_tf);
@@ -160,14 +156,13 @@ private:
         return 2.0 * y / dist2;
     }
 
-
     // ----------------------------------------------------------
     //   VARIABLES
     // ----------------------------------------------------------
 
-    rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr pose_sub_;
+    rclcpp::Subscription<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr pose_sub_;
     rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr path_sub_;
-    
+
     rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_pub_;
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr carrot_pub_;
 
