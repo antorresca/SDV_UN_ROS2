@@ -192,6 +192,9 @@ private:
 
         odom_msg.pose.covariance[0] = 1.0;
         odom_msg.pose.covariance[7] = 1.0;
+        odom_msg.pose.covariance[14] = 2.0;
+        odom_msg.pose.covariance[21] = 2.0;
+        odom_msg.pose.covariance[28] = 2.0;
         odom_msg.pose.covariance[35] = 2.0;
 
         odom_msg.twist.twist.linear.x = vx_;
