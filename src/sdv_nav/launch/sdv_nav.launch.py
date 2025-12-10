@@ -138,22 +138,10 @@ def generate_launch_description():
     # LASER ODOMETRY (Hector remplacé)
     # ===========================
     laser_scan_matcher = Node(
-        package="laser_scan_matcher",
-        executable="laser_scan_matcher_node",
-        name="laser_scan_matcher",
-        output="screen",
-        parameters=[{
-            'use_sim_time': use_sim_time,
-            'base_frame': 'base_link',
-            'odom_frame': 'odom',
-            'max_iterations': 10,
-            'use_corr_tricks': True,
-            'min_valid_points': 20
-        }],
-        remappings=[
-            ('scan', '/scan'),
-            ('odom', '/odom')
-        ]
+        package="sdv_scan_matcher",
+        executable="sdv_scan_matcher",
+        name="sdv_scan_matcher",
+        output="screen"
     )
 
     # ===========================
