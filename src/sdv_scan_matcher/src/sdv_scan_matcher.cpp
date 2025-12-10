@@ -22,7 +22,7 @@ public:
   : Node("sdv_scan_matcher"),
     x_(0.0), y_(0.0), yaw_(0.0)
   {
-    // params
+    // params 
     this->declare_parameter<int>("downsample_step", 4);
     this->declare_parameter<int>("max_iterations", 20);
     this->declare_parameter<double>("max_correspondence_dist", 0.2);
@@ -34,7 +34,7 @@ public:
       "/scan",  rclcpp::SensorDataQoS(),
       std::bind(&ScanMatcher::scan_callback, this, std::placeholders::_1));
 
-    odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom_lidar", 10);
+    odom_pub_ = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
     tf_broadcaster_ = std::make_shared<tf2_ros::TransformBroadcaster>(this);
   }
 
