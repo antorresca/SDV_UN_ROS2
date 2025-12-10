@@ -144,6 +144,68 @@ def generate_launch_description():
         output="screen"
     )
 
+    # ===============================================
+    # NAV2 LIFECYCLE NODES
+    # ===============================================
+
+    # ===========================
+    # MAP SERVER
+    # ===========================
+    map_server = Node(
+        package='nav2_map_server',
+        executable='map_server',
+        name='map_server',
+        output='screen',
+        parameters=[
+            {'use_sim_time': use_sim_time},
+            {'yaml_filename': map_yaml_path},
+            {'autostart': False}
+        ]
+    )
+
+    # ===========================
+    # AMCL
+    # ===========================
+    amcl = Node(
+        package='nav2_amcl',
+        executable='amcl',
+        name='amcl',
+        output='screen',
+        parameters=[{
+            'use_sim_time': use_sim_time,
+            'autostart': False,
+            'base_frame_id': 'base_link',
+            'odom_frame_id': 'odom',
+            'global_frame_id': 'map',
+            'laser_frame_id': 'cloud',
+            'scan_topic': 'scan',
+        }],
+        remappings=[
+            ('scan', '/scan'),
+            ('odom', '/odom'),
+        ]
+    )
+
+    # ===========================
+    # NAV2: LIFECYCLE MANAGER (Orquestador)
+    # ===========================
+    nav2_nodes_to_manage = [
+        'map_server', 
+        'amcl'
+    ]
+    
+    lifecycle_manager = Node(
+        package='nav2_lifecycle_manager',
+        executable='lifecycle_manager',
+        name='lifecycle_manager_navigation',
+        output='screen',
+        parameters=[
+            {'use_sim_time': use_sim_time},
+            {'autostart': True},
+            {'node_names': nav2_nodes_to_manage}
+        ]
+    )
+
     # ===========================
     # RETURN
     # ===========================
@@ -161,6 +223,11 @@ def generate_launch_description():
         traslate_node,
         tracking_node,
         planner_node,
+
+        amcl,
+        map_server,
+
+        lifecycle_manager,
 
         # Odometry via Laser Scan Matching
         laser_scan_matcher

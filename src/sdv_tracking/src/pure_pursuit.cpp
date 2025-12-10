@@ -30,7 +30,7 @@ public:
 
         // SLAM Toolbox pose
         pose_sub_ = create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
-            "/pose", 10,
+            "/amcl_pose", 10,
             std::bind(&PurePursuitSLAM::poseCallback, this, std::placeholders::_1));
 
         // Global plan

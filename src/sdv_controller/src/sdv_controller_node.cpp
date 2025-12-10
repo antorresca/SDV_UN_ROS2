@@ -22,7 +22,7 @@ public:
         tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
         pub_motor_ = this->create_publisher<std_msgs::msg::String>("/vel2cmd", 10);
-        pub_odom_  = this->create_publisher<nav_msgs::msg::Odometry>("/odom_teo", 10);
+        pub_odom_  = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
 
         // Timer para odometría (20 Hz = 50 ms)
         timer_ = this->create_wall_timer(
@@ -199,9 +199,9 @@ private:
 
         // Establecer covarianza (importante para navegación)
         // La covarianza representa la incertidumbre en la estimación
-        odom_msg.pose.covariance[0] = 0.1;   // x
-        odom_msg.pose.covariance[7] = 0.1;   // y
-        odom_msg.pose.covariance[35] = 0.2;  // yaw
+        odom_msg.pose.covariance[0] = 1.0;   // x
+        odom_msg.pose.covariance[7] = 1.0;   // y
+        odom_msg.pose.covariance[35] = 2.0;  // yaw
         
         odom_msg.twist.twist.linear.x = vx_;
         odom_msg.twist.twist.linear.y = 0.0;
