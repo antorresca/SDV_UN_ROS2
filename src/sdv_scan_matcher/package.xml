@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>sdv_scan_matcher</name>
+  <version>0.0.0</version>
+  <description>SDV prueba: scan matcher odometry (C++).</description>
+  <maintainer email="tu@mail.com">Tu Nombre</maintainer>
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>sensor_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>tf2_ros</depend>
+
+  <!-- Eigen (system dependency) -->
+  <build_depend>eigen3</build_depend>
+  <exec_depend>eigen3</exec_depend>
+
+  <export>
+  </export>
+</package>
