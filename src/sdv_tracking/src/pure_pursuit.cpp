@@ -29,7 +29,7 @@ public:
 
         // SLAM Toolbox pose
         pose_sub_ = create_subscription<geometry_msgs::msg::PoseStamped>(
-            "/slam_toolbox/pose", 10,
+            "/pose", 10,
             std::bind(&PurePursuitSLAM::poseCallback, this, std::placeholders::_1));
 
         // Global plan
