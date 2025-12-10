@@ -123,10 +123,9 @@ def generate_launch_description():
         name="sdv_planner",
         output="screen"
     )     
-    
+
     # ===========================
-    # NUEVO NODO: traslate (sdv_pruebas)
-    # Usa la acción ComputePathToPose y luego FollowPath
+    # NODO: translate
     # ===========================
     traslate_node = Node(
         package="sdv_pruebas",
@@ -140,7 +139,7 @@ def generate_launch_description():
     # ===============================================
 
     # ===========================
-    # MAP SERVER
+    # MAP SERVER (estático)
     # ===========================
     map_server = Node(
         package='nav2_map_server',
@@ -155,47 +154,25 @@ def generate_launch_description():
     )
 
     # ===========================
-    # AMCL
+    # SLAM TOOLBOX (DINÁMICO) → reemplaza AMCL + Hector
     # ===========================
-#    amcl = Node(
-#        package='nav2_amcl',
-#        executable='amcl',
-#        name='amcl',
-#        output='screen',
-#        parameters=[{
-#            'use_sim_time': use_sim_time,
-#            'autostart': False,
-#            'base_frame_id': 'base_link',
-#            'odom_frame_id': 'odom',
-#            'global_frame_id': 'map',
-#            'laser_frame_id': 'cloud',
-#            'scan_topic': 'scan',
-#        }],
-#        remappings=[
-#            ('scan', '/scan'),
-#            ('odom', '/odom'),
-#        ]
-#    )
-
-    # ===========================
-    # HECTOR SLAM
-    # ===========================
-    hector_slam = Node(
-        package='hector_mapping',
-        executable='hector_mapping',
-        name='hector_mapping',
+    slam_toolbox = Node(
+        package='slam_toolbox',
+        executable='sync_slam_toolbox_node',
+        name='slam_toolbox',
         output='screen',
         parameters=[{
             'use_sim_time': use_sim_time,
-            'pub_map_scanmatch_transform': True,
-            'tf_map_scanmatch_transform_frame_name': 'map',
-            'base_frame': 'base_link',
+            'slam_mode': True,                      # SLAM + Localización
+            'map_file_name': '',
             'odom_frame': 'odom',
-            'map_frame': 'map'
+            'map_frame': 'map',
+            'base_frame': 'base_link',
+            'scan_topic': '/scan',
+            'mode': 'mapping'                       # asegura mapa dinámico
         }],
         remappings=[
-            ('scan', '/scan'),
-            ('map', '/map_dinamico'),              
+            ('map', '/map_dinamico'),                 # <--- tu mapa dinámico
             ('map_metadata', '/map_dinamico_metadata')
         ]
     )
@@ -223,8 +200,7 @@ def generate_launch_description():
     )
 
     # ===========================
-    # NAV2: CONTROLLER SERVER (FIXED)
-    # Parámetros CRÍTICOS añadidos para evitar el Segmentation Fault
+    # NAV2: CONTROLLER SERVER
     # ===========================
     controller_server = Node(
         package='nav2_controller',
@@ -234,57 +210,39 @@ def generate_launch_description():
         parameters=[{
             'use_sim_time': use_sim_time,
             'autostart': False,
-            
-            # Frecuencia del controlador
+
             'controller_frequency': 20.0,
-            
-            # 1. Definición y configuración del Goal Checker
+
             'goal_checker_plugins': ['general_goal_checker'],
             'general_goal_checker': {
                 'plugin': 'nav2_controller::SimpleGoalChecker',
                 'xy_goal_tolerance': 0.25,
                 'yaw_goal_tolerance': 0.25,
             },
-            
-            # 2. FIX: Parámetros del Goal Checker por defecto (elimina el WARN)
             'current_goal_checker': 'general_goal_checker',
 
-            # Lista de plugins
             'controller_plugins': ['FollowPath'],
-            
-            # Parámetros generales del controlador
+
             'odom_topic': '/odom',
             'base_frame_id': 'base_link',
-            
-            # 3. FIX: Umbrales de velocidad (CRÍTICO para DWB/evitar SegFault)
+
             'min_x_velocity_threshold': 0.001,
             'min_theta_velocity_threshold': 0.001,
-            
-            # Plugin DWB como FollowPath
+
             'FollowPath': {
                 'plugin': 'dwb_core::DWBLocalPlanner',
-                
-                # Velocidades
                 'min_vel_x': 0.0,
                 'max_vel_x': 0.5,
                 'min_vel_theta': -1.0,
                 'max_vel_theta': 1.0,
-                
-                # Muestras
                 'vx_samples': 10,
                 'vtheta_samples': 20,
-                
-                # Aceleraciones
                 'acc_lim_x': 1.0,
                 'acc_lim_theta': 2.0,
-                
-                # Huella
                 'footprint_model': {
                     'type': 'circle',
                     'radius': 0.22
                 },
-                
-                # ❗ Critic plugins (Restauramos críticos geométricos para estabilidad)
                 'critics': [
                     'PathAlign',
                     'GoalAlign',
@@ -295,18 +253,16 @@ def generate_launch_description():
         }],
         remappings=[
             ('cmd_vel', '/cmd_vel'),
-            ('odom', '/odom'),
-            # REMOVED: ('plan', '/path') --> Ya no es necesario si usas la acción FollowPath
+            ('odom', '/odom')
         ]
     )
 
     # ===========================
-    # NAV2: LIFECYCLE MANAGER (Orquestador)
+    # NAV2: LIFECYCLE MANAGER
     # ===========================
     nav2_nodes_to_manage = [
-        'map_server', 
-        #'amcl', 
-        'planner_server', 
+        'map_server',
+        'planner_server',
         'controller_server'
     ]
     
@@ -322,32 +278,31 @@ def generate_launch_description():
         ]
     )
 
-
     # ===========================
     # RETURN
     # ===========================
     return LaunchDescription([
         use_sim_time_arg,
-        
-        # Sistemas de bajo nivel
+
         cloud_tf,
         footprint_tf,
         robot_state_pub,
         joint_state_pub,
+
         sick_node,
         serial_node,
         controller_node,
         traslate_node,
         tracking_node,
         planner_node,
-        hector_slam,
 
-        # Nodos Nav2
+        # SLAM dinámico
+        slam_toolbox,
+
+        # Nav2
         map_server,
-        #amcl,
         planner_server,
         controller_server,
-        
-        # Orquestador Nav2
+
         lifecycle_manager
     ])
