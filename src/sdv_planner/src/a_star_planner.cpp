@@ -76,7 +76,7 @@ nav_msgs::msg::Path AStarPlanner::plan(const geometry_msgs::msg::Pose & start, c
 {
     // Define possible movement directions
     std::vector<std::pair<int, int>> explore_directions = {
-        {1,1},{1,0},{1,-1}
+        {1,0},{-1,0},{0,1},{0,-1},{1,1},{-1,-1},{-1,1},{1,-1}
     };
 
     // Priority queue with custom comparison for A* based on cost + heuristic
