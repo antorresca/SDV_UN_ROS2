@@ -134,9 +134,27 @@ def generate_launch_description():
         output="screen"
     )
 
-    # ===============================================
-    # NAV2 LIFECYCLE NODES
-    # ===============================================
+    # ===========================
+    # LASER ODOMETRY (Hector remplacé)
+    # ===========================
+    laser_scan_matcher = Node(
+        package="laser_scan_matcher",
+        executable="laser_scan_matcher_node",
+        name="laser_scan_matcher",
+        output="screen",
+        parameters=[{
+            'use_sim_time': use_sim_time,
+            'base_frame': 'base_link',
+            'odom_frame': 'odom',
+            'max_iterations': 10,
+            'use_corr_tricks': True,
+            'min_valid_points': 20
+        }],
+        remappings=[
+            ('scan', '/scan'),
+            ('odom', '/odom')
+        ]
+    )
 
     # ===========================
     # MAP SERVER (estático)
@@ -150,30 +168,6 @@ def generate_launch_description():
             {'use_sim_time': use_sim_time},
             {'yaml_filename': map_yaml_path},
             {'autostart': False}
-        ]
-    )
-
-    # ===========================
-    # SLAM TOOLBOX (DINÁMICO) → reemplaza AMCL + Hector
-    # ===========================
-    slam_toolbox = Node(
-        package='slam_toolbox',
-        executable='sync_slam_toolbox_node',
-        name='slam_toolbox',
-        output='screen',
-        parameters=[{
-            'use_sim_time': use_sim_time,
-            'slam_mode': True,                      # SLAM + Localización
-            'map_file_name': '',
-            'odom_frame': 'odom',
-            'map_frame': 'map',
-            'base_frame': 'base_link',
-            'scan_topic': '/scan',
-            'mode': 'mapping'                       # asegura mapa dinámico
-        }],
-        remappings=[
-            ('map', '/map_dinamico'),                 # <--- tu mapa dinámico
-            ('map_metadata', '/map_dinamico_metadata')
         ]
     )
 
@@ -210,7 +204,6 @@ def generate_launch_description():
         parameters=[{
             'use_sim_time': use_sim_time,
             'autostart': False,
-
             'controller_frequency': 20.0,
 
             'goal_checker_plugins': ['general_goal_checker'],
@@ -222,7 +215,6 @@ def generate_launch_description():
             'current_goal_checker': 'general_goal_checker',
 
             'controller_plugins': ['FollowPath'],
-
             'odom_topic': '/odom',
             'base_frame_id': 'base_link',
 
@@ -296,8 +288,8 @@ def generate_launch_description():
         tracking_node,
         planner_node,
 
-        # SLAM dinámico
-        slam_toolbox,
+        # Odometry via Laser Scan Matching
+        laser_scan_matcher,
 
         # Nav2
         map_server,
