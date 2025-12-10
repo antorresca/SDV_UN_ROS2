@@ -147,7 +147,7 @@ def generate_launch_description():
     # ===========================
     # MAP SERVER (estático)
     # ===========================
-    map_server = Node(
+    """ map_server = Node(
         package='nav2_map_server',
         executable='map_server',
         name='map_server',
@@ -280,7 +280,7 @@ def generate_launch_description():
             {'autostart': True},
             {'node_names': nav2_nodes_to_manage}
         ]
-    )
+    ) """
 
     # ===========================
     # RETURN
@@ -304,10 +304,10 @@ def generate_launch_description():
         laser_scan_matcher,
 
         # Nav2
-        map_server,
+        """ map_server,
         planner_server,
         controller_server,
         amcl,
 
-        lifecycle_manager
+        lifecycle_manager """
     ])
