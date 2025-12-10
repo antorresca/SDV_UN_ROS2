@@ -22,7 +22,7 @@ public:
         tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
         pub_motor_ = this->create_publisher<std_msgs::msg::String>("/vel2cmd", 10);
-        pub_odom_  = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
+        pub_odom_  = this->create_publisher<nav_msgs::msg::Odometry>("/odom_teo", 10);
 
         // Timer para odometría (20 Hz = 50 ms)
         timer_ = this->create_wall_timer(

@@ -25,7 +25,8 @@ setup(
     entry_points={
         'console_scripts': [
             'sdv_pruebas = sdv_pruebas.sdv_pruebas:main',
-            'sdv_translate = sdv_pruebas.sdv_translate:main'
+            'sdv_translate = sdv_pruebas.sdv_translate:main',
+            'sdv_scan_matcher = sdv_pruebas.sdv_scan_matcher:main'
         ],
     },
 )
