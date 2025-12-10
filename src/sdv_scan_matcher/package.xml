@@ -18,5 +18,6 @@
   <exec_depend>eigen3</exec_depend>
 
   <export>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>
