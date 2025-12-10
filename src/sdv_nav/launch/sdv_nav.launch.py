@@ -238,12 +238,36 @@ def generate_launch_description():
     )
 
     # ===========================
+    # AMCL
+    # ===========================
+    amcl = Node(
+        package='nav2_amcl',
+        executable='amcl',
+        name='amcl',
+        output='screen',
+        parameters=[{
+            'use_sim_time': use_sim_time,
+            'autostart': False,
+            'base_frame_id': 'base_link',
+            'odom_frame_id': 'odom',
+            'global_frame_id': 'map',
+            'laser_frame_id': 'cloud',
+            'scan_topic': 'scan',
+        }],
+        remappings=[
+            ('scan', '/scan'),
+            ('odom', '/odom'),
+        ]
+    )
+
+    # ===========================
     # NAV2: LIFECYCLE MANAGER
     # ===========================
     nav2_nodes_to_manage = [
         'map_server',
         'planner_server',
-        'controller_server'
+        'controller_server',
+        'amcl'
     ]
     
     lifecycle_manager = Node(
@@ -283,6 +307,7 @@ def generate_launch_description():
         map_server,
         planner_server,
         controller_server,
+        amcl,
 
         lifecycle_manager
     ])
