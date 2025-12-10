@@ -18,13 +18,12 @@ public:
     {
         RCLCPP_INFO(this->get_logger(), "Nodo 'sdv_controller' ejecutándose");
 
-        // Inicializar el broadcaster TF
         tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
         pub_motor_ = this->create_publisher<std_msgs::msg::String>("/vel2cmd", 10);
         pub_odom_  = this->create_publisher<nav_msgs::msg::Odometry>("/odom", 10);
 
-        // Timer para odometría (20 Hz = 50 ms)
+        // Timer odometría a 20 Hz
         timer_ = this->create_wall_timer(
             std::chrono::milliseconds(50),
             std::bind(&SdvControllerNode::update_odometry, this));
@@ -34,16 +33,15 @@ public:
             std::bind(&SdvControllerNode::cmd_callback, this, std::placeholders::_1));
 
         last_time_ = this->now();
+        last_cmd_time_ = this->now();     // ← inicializar el tiempo del último cmd_vel
 
-        // Inicialización pose
         x_ = 0.0;
         y_ = 0.0;
         th_ = 0.0;
 
         vx_ = 0.0;
         wz_ = 0.0;
-        
-        // Inicializar la primera transformada para que el frame "odom" exista
+
         publish_initial_tf();
     }
 
@@ -56,20 +54,18 @@ private:
 
     std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
-    // Odometría interna
     double x_, y_, th_;
     double vx_, wz_;
     rclcpp::Time last_time_;
 
-    // Parametros robot
+    rclcpp::Time last_cmd_time_;   // ← tiempo del último comando recibido
+
     double wheel_radius = 0.075;
     double wheel_base   = 0.32;
 
-    // PWM
     double PWM_R, PWM_L;
 
     void publish_initial_tf() {
-        // Publicar una transformada inicial para que el frame "odom" exista
         geometry_msgs::msg::TransformStamped odom_tf;
         odom_tf.header.stamp = this->now();
         odom_tf.header.frame_id = "odom";
@@ -93,77 +89,75 @@ private:
         vx_ = msg->linear.x;
         wz_ = msg->angular.z;
 
-        PWM_R = getPWM(vx_,wz_,true);
-        PWM_L = getPWM(vx_,wz_,false);
-        
-        // Limitar PWM
+        last_cmd_time_ = this->now();   // ← registrar llegada del comando
+
+        PWM_R = getPWM(vx_, wz_, true);
+        PWM_L = getPWM(vx_, wz_, false);
+
         PWM_R = std::clamp(PWM_R, -40.0, 40.0);
         PWM_L = std::clamp(PWM_L, -40.0, 40.0);
 
         std_msgs::msg::String motor_msg;
         motor_msg.data = "m 1 " + std::to_string((int)PWM_R) + " " + std::to_string((int)PWM_L);
         pub_motor_->publish(motor_msg);
-        
-        RCLCPP_DEBUG(this->get_logger(), "PWM R: %d, L: %d", (int)PWM_R, (int)PWM_L);
     }
 
-    int getPWM(double V, double W,bool Side){
-        double wheel_radio = 0.075; //m
-        double wheel_base = 0.32;  //m
+    int getPWM(double V, double W, bool Side){
+        double wheel_radio = 0.075;
+        double wheel_base  = 0.32;
         int factor = 0;
 
-        double w_wheel =  V/wheel_radio;
+        double w_wheel =  V / wheel_radio;
 
-        if(Side){ //If Side == True, it's right wheel
-            w_wheel -= (wheel_base*W)/wheel_radio;
-        }else{
-            w_wheel += (wheel_base*W)/wheel_radio;
-        };
+        if(Side){ // rueda derecha
+            w_wheel -= (wheel_base * W) / wheel_radio;
+        } else {
+            w_wheel += (wheel_base * W) / wheel_radio;
+        }
 
-        if(w_wheel>0){
-        factor = 1;
-        }else{
-        factor = -1;
-        };
+        factor = (w_wheel > 0) ? 1 : -1;
 
-        return (0.8333*(30/3.141592)*abs(w_wheel)+10)*factor;
+        return (0.8333 * (30 / 3.141592) * abs(w_wheel) + 10) * factor;
     }
 
     void update_odometry() {
         auto now = this->now();
         double dt = (now - last_time_).seconds();
-        
-        // Evitar dt demasiado grande o negativo
+
         if (dt <= 0.0 || dt > 1.0) {
             last_time_ = now;
             return;
         }
-        
+
         last_time_ = now;
 
-        // Integración odometría (modelo de robot diferencial)
+        // --------------------------
+        // TIMEOUT DE 100 ms
+        // --------------------------
+        if ((now - last_cmd_time_).seconds() > 0.1) {
+            vx_ = 0.0;
+            wz_ = 0.0;
+        }
+
+        // Integración odometría
         if (fabs(wz_) < 0.0001) {
-            // Movimiento rectilíneo (para evitar división por cero)
             x_ += vx_ * cos(th_) * dt;
             y_ += vx_ * sin(th_) * dt;
             th_ += wz_ * dt;
         } else {
-            // Movimiento curvilíneo
             double delta_th = wz_ * dt;
             double v_over_w = vx_ / wz_;
             double x_c = x_ - v_over_w * sin(th_);
             double y_c = y_ + v_over_w * cos(th_);
-            
+
             th_ += delta_th;
             x_ = x_c + v_over_w * sin(th_);
             y_ = y_c - v_over_w * cos(th_);
         }
 
-        // Normalizar ángulo
         while (th_ > M_PI) th_ -= 2.0 * M_PI;
         while (th_ < -M_PI) th_ += 2.0 * M_PI;
 
-        // Publicar TF: odom → base_link
         geometry_msgs::msg::TransformStamped odom_tf;
         odom_tf.header.stamp = now;
         odom_tf.header.frame_id = "odom";
@@ -182,7 +176,6 @@ private:
 
         tf_broadcaster_->sendTransform(odom_tf);
 
-        // Publicar mensaje Odometry
         nav_msgs::msg::Odometry odom_msg;
         odom_msg.header.stamp = now;
         odom_msg.header.frame_id = "odom";
@@ -197,26 +190,16 @@ private:
         odom_msg.pose.pose.orientation.z = q.z();
         odom_msg.pose.pose.orientation.w = q.w();
 
-        // Establecer covarianza (importante para navegación)
-        // La covarianza representa la incertidumbre en la estimación
-        odom_msg.pose.covariance[0] = 1.0;   // x
-        odom_msg.pose.covariance[7] = 1.0;   // y
-        odom_msg.pose.covariance[35] = 2.0;  // yaw
-        
+        odom_msg.pose.covariance[0] = 1.0;
+        odom_msg.pose.covariance[7] = 1.0;
+        odom_msg.pose.covariance[35] = 2.0;
+
         odom_msg.twist.twist.linear.x = vx_;
-        odom_msg.twist.twist.linear.y = 0.0;
-        odom_msg.twist.twist.linear.z = 0.0;
-        odom_msg.twist.twist.angular.x = 0.0;
-        odom_msg.twist.twist.angular.y = 0.0;
         odom_msg.twist.twist.angular.z = wz_;
-        
-        // Covarianza de velocidad
-        odom_msg.twist.covariance[0] = 0.1;   // vx
-        odom_msg.twist.covariance[35] = 0.2;  // wz
+        odom_msg.twist.covariance[0] = 0.1;
+        odom_msg.twist.covariance[35] = 0.2;
 
         pub_odom_->publish(odom_msg);
-        
-        RCLCPP_DEBUG(this->get_logger(), "Odometry - x: %.2f, y: %.2f, th: %.2f", x_, y_, th_);
     }
 };
 
