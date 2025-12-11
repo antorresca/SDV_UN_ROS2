@@ -14,6 +14,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 include_directories(include)
 
@@ -24,6 +25,7 @@ set(dependencies
   tf2
   tf2_ros
   tf2_geometry_msgs
+  sensor_msgs
 )
 
 add_executable(pure_pursuit src/pure_pursuit.cpp)
