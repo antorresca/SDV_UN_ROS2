@@ -171,8 +171,8 @@ def generate_launch_description():
             'scan_topic': 'scan',
             'update_min_d': 0.5,  # Aumentado de un valor típico de 0.2
             'update_min_a': 0.2,  # Aumentado de un valor típico de 0.1
-            'recovery_alpha_slow': 0.005,  # Tasa lenta: más tolerancia a la deriva de largo plazo
-            'recovery_alpha_fast': 0.05,   # Tasa rápida: más tolerancia a cambios bruscos
+            'recovery_alpha_slow': 0.001,  # Tasa lenta: más tolerancia a la deriva de largo plazo
+            'recovery_alpha_fast': 0.5,   # Tasa rápida: más tolerancia a cambios bruscos
             # 2. Parámetros del Modelo de Movimiento (Para desconfiar de la Odometría)
             # Estos indican a AMCL que espere mucha más incertidumbre (dispersión de partículas)
             # en la estimación de movimiento basada en la odometría.
