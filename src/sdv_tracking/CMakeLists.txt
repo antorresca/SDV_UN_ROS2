@@ -26,6 +26,7 @@ set(dependencies
   tf2_ros
   tf2_geometry_msgs
   sensor_msgs
+  
 )
 
 add_executable(pure_pursuit src/pure_pursuit.cpp)
