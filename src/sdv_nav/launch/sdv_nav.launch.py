@@ -124,16 +124,6 @@ def generate_launch_description():
         output="screen"
     )     
 
-    # ===========================
-    # LASER ODOMETRY (Hector remplacé)
-    # ===========================
-    laser_scan_matcher = Node(
-        package="sdv_scan_matcher",
-        executable="sdv_scan_matcher",
-        name="sdv_scan_matcher",
-        output="screen"
-    )
-
     # ===============================================
     # NAV2 LIFECYCLE NODES
     # ===============================================
@@ -233,8 +223,5 @@ def generate_launch_description():
         amcl,
         map_server,
 
-        lifecycle_manager,
-
-        # Odometry via Laser Scan Matching
-        laser_scan_matcher
+        lifecycle_manager
     ])
